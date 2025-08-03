@@ -1,0 +1,773 @@
+openapi: 3.0.3
+info:
+  title: Pet Catalog Service API
+  description: Microservice for managing pet inventory, breeds, characteristics, and search functionality
+  version: 1.0.0
+  contact:
+    name: PetStore API Team
+    email: api@petstore.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.petstore.com/catalog/v1
+    description: Production server
+  - url: https://staging-api.petstore.com/catalog/v1
+    description: Staging server
+  - url: http://localhost:3001/catalog/v1
+    description: Local development server
+
+paths:
+  /pets:
+    get:
+      summary: Search and filter pets
+      description: Retrieve pets with filtering, sorting, and pagination
+      operationId: searchPets
+      parameters:
+        - name: species
+          in: query
+          description: Filter by pet species
+          required: false
+          schema:
+            type: string
+            enum: [dog, cat, bird, fish, reptile, small-mammal]
+        - name: breed
+          in: query
+          description: Filter by pet breed
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: Filter by pet size
+          required: false
+          schema:
+            type: string
+            enum: [small, medium, large, extra-large]
+        - name: age_range
+          in: query
+          description: Filter by age range
+          required: false
+          schema:
+            type: string
+            enum: [puppy, young, adult, senior]
+        - name: price_min
+          in: query
+          description: Minimum price filter
+          required: false
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - name: price_max
+          in: query
+          description: Maximum price filter
+          required: false
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - name: availability
+          in: query
+          description: Filter by availability status
+          required: false
+          schema:
+            type: string
+            enum: [available, reserved, sold, coming-soon]
+        - name: gender
+          in: query
+          description: Filter by pet gender
+          required: false
+          schema:
+            type: string
+            enum: [male, female]
+        - name: vaccinated
+          in: query
+          description: Filter by vaccination status
+          required: false
+          schema:
+            type: boolean
+        - name: sort_by
+          in: query
+          description: Sort field
+          required: false
+          schema:
+            type: string
+            enum: [price, age, date_added, popularity]
+            default: date_added
+        - name: sort_order
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response with filtered pets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetSearchResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Add new pet to catalog
+      description: Create a new pet entry in the catalog
+      operationId: createPet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePetRequest'
+      responses:
+        '201':
+          description: Pet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid pet data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pets/{petId}:
+    get:
+      summary: Get pet details by ID
+      description: Retrieve detailed information about a specific pet
+      operationId: getPetById
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier for the pet
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Pet details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update pet information
+      description: Update an existing pet's information
+      operationId: updatePet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier for the pet
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePetRequest'
+      responses:
+        '200':
+          description: Pet updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid pet data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Remove pet from catalog
+      description: Soft delete a pet from the catalog
+      operationId: deletePet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier for the pet
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Pet deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pets/{petId}/availability:
+    patch:
+      summary: Update pet availability status
+      description: Update the availability status of a specific pet
+      operationId: updatePetAvailability
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: Unique identifier for the pet
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityUpdateRequest'
+      responses:
+        '200':
+          description: Availability updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid availability status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /breeds:
+    get:
+      summary: Get available breeds
+      description: Retrieve list of available breeds by species
+      operationId: getBreeds
+      parameters:
+        - name: species
+          in: query
+          description: Filter breeds by species
+          required: false
+          schema:
+            type: string
+            enum: [dog, cat, bird, fish, reptile, small-mammal]
+      responses:
+        '200':
+          description: Breeds retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreedsResponse'
+
+  /species:
+    get:
+      summary: Get available species
+      description: Retrieve list of all available pet species
+      operationId: getSpecies
+      responses:
+        '200':
+          description: Species retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpeciesResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+        - species
+        - breed
+        - age
+        - price
+        - availability
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the pet
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          description: Pet's name
+          example: "Buddy"
+        species:
+          type: string
+          enum: [dog, cat, bird, fish, reptile, small-mammal]
+          description: Pet species
+          example: "dog"
+        breed:
+          type: string
+          description: Pet breed
+          example: "Golden Retriever"
+        age:
+          type: integer
+          description: Pet age in months
+          minimum: 0
+          example: 24
+        age_category:
+          type: string
+          enum: [puppy, young, adult, senior]
+          description: Age category
+          example: "young"
+        size:
+          type: string
+          enum: [small, medium, large, extra-large]
+          description: Pet size category
+          example: "large"
+        gender:
+          type: string
+          enum: [male, female]
+          description: Pet gender
+          example: "male"
+        price:
+          type: number
+          format: float
+          description: Pet price in USD
+          minimum: 0
+          example: 1200.00
+        description:
+          type: string
+          description: Detailed description of the pet
+          example: "Friendly and energetic Golden Retriever, great with kids"
+        characteristics:
+          type: array
+          items:
+            type: string
+          description: Pet characteristics and traits
+          example: ["friendly", "energetic", "good-with-kids", "house-trained"]
+        health_info:
+          $ref: '#/components/schemas/HealthInfo'
+        availability:
+          type: string
+          enum: [available, reserved, sold, coming-soon]
+          description: Current availability status
+          example: "available"
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetImage'
+          description: Pet photos
+        location:
+          $ref: '#/components/schemas/Location'
+        created_at:
+          type: string
+          format: date-time
+          description: When the pet was added to catalog
+          example: "2025-08-03T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: When the pet information was last updated
+          example: "2025-08-03T14:45:00Z"
+
+    HealthInfo:
+      type: object
+      properties:
+        vaccinated:
+          type: boolean
+          description: Vaccination status
+          example: true
+        spayed_neutered:
+          type: boolean
+          description: Spay/neuter status
+          example: false
+        health_certificate:
+          type: boolean
+          description: Health certificate available
+          example: true
+        special_needs:
+          type: array
+          items:
+            type: string
+          description: Any special health needs or conditions
+          example: ["requires daily medication"]
+        last_vet_visit:
+          type: string
+          format: date
+          description: Date of last veterinary visit
+          example: "2025-07-15"
+
+    PetImage:
+      type: object
+      required:
+        - url
+        - is_primary
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Image URL
+          example: "https://images.petstore.com/pets/buddy-1.jpg"
+        alt_text:
+          type: string
+          description: Alternative text for the image
+          example: "Golden Retriever sitting in grass"
+        is_primary:
+          type: boolean
+          description: Whether this is the primary display image
+          example: true
+
+    Location:
+      type: object
+      properties:
+        store_id:
+          type: string
+          description: Store identifier where pet is located
+          example: "store-123"
+        store_name:
+          type: string
+          description: Store name
+          example: "PetStore Downtown"
+        city:
+          type: string
+          description: City where pet is located
+          example: "San Francisco"
+        state:
+          type: string
+          description: State where pet is located
+          example: "CA"
+        zip_code:
+          type: string
+          description: ZIP code
+          example: "94105"
+
+    CreatePetRequest:
+      type: object
+      required:
+        - name
+        - species
+        - breed
+        - age
+        - price
+        - description
+      properties:
+        name:
+          type: string
+          example: "Buddy"
+        species:
+          type: string
+          enum: [dog, cat, bird, fish, reptile, small-mammal]
+          example: "dog"
+        breed:
+          type: string
+          example: "Golden Retriever"
+        age:
+          type: integer
+          minimum: 0
+          example: 24
+        size:
+          type: string
+          enum: [small, medium, large, extra-large]
+          example: "large"
+        gender:
+          type: string
+          enum: [male, female]
+          example: "male"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 1200.00
+        description:
+          type: string
+          example: "Friendly and energetic Golden Retriever"
+        characteristics:
+          type: array
+          items:
+            type: string
+          example: ["friendly", "energetic"]
+        health_info:
+          $ref: '#/components/schemas/HealthInfo'
+        location:
+          $ref: '#/components/schemas/Location'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetImage'
+
+    UpdatePetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+          minimum: 0
+        price:
+          type: number
+          format: float
+          minimum: 0
+        description:
+          type: string
+        characteristics:
+          type: array
+          items:
+            type: string
+        health_info:
+          $ref: '#/components/schemas/HealthInfo'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetImage'
+
+    AvailabilityUpdateRequest:
+      type: object
+      required:
+        - availability
+      properties:
+        availability:
+          type: string
+          enum: [available, reserved, sold, coming-soon]
+          example: "reserved"
+        reserved_until:
+          type: string
+          format: date-time
+          description: Reservation expiry (for reserved status)
+          example: "2025-08-10T15:00:00Z"
+        notes:
+          type: string
+          description: Additional notes about status change
+          example: "Reserved for customer John Doe"
+
+    PetSearchResponse:
+      type: object
+      required:
+        - pets
+        - pagination
+      properties:
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        filters_applied:
+          type: object
+          description: Summary of applied filters
+          additionalProperties:
+            type: string
+
+    Pagination:
+      type: object
+      required:
+        - page
+        - limit
+        - total_items
+        - total_pages
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 20
+        total_items:
+          type: integer
+          description: Total number of items
+          example: 150
+        total_pages:
+          type: integer
+          description: Total number of pages
+          example: 8
+        has_next:
+          type: boolean
+          description: Whether there is a next page
+          example: true
+        has_prev:
+          type: boolean
+          description: Whether there is a previous page
+          example: false
+
+    BreedsResponse:
+      type: object
+      required:
+        - breeds
+      properties:
+        breeds:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Golden Retriever"
+              species:
+                type: string
+                example: "dog"
+              typical_size:
+                type: string
+                enum: [small, medium, large, extra-large]
+                example: "large"
+              characteristics:
+                type: array
+                items:
+                  type: string
+                example: ["friendly", "intelligent", "active"]
+
+    SpeciesResponse:
+      type: object
+      required:
+        - species
+      properties:
+        species:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "dog"
+              display_name:
+                type: string
+                example: "Dogs"
+              breed_count:
+                type: integer
+                description: Number of available breeds
+                example: 25
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "INVALID_PARAMETERS"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid price range: minimum price cannot be greater than maximum price"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+          example: "2025-08-03T10:30:00Z"
+        request_id:
+          type: string
+          description: Unique request identifier for debugging
+          example: "req-123e4567-e89b-12d3-a456-426614174000"
+
+tags:
+  - name: Pets
+    description: Pet catalog management operations
+  - name: Breeds
+    description: Breed information operations
+  - name: Species
+    description: Species information operations
