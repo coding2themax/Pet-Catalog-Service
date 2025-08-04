@@ -125,7 +125,7 @@ public class PetService {
 
   public Mono<Void> deletePet(String petId) {
     return getPetById(petId)
-        .doOnNext(pet -> petStorage.remove(petId))
+        .doOnNext(_ -> petStorage.remove(petId))
         .then();
   }
 

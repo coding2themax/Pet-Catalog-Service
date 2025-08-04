@@ -1,15 +1,15 @@
 package com.coding2.the.max.petstore.catalog.dto;
 
+import java.util.List;
+
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
-import com.coding2.the.max.petstore.catalog.model.Pet;
 import com.coding2.the.max.petstore.catalog.model.PetImage;
+
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.Positive;
-import java.util.List;
 
 @Data
 @Builder

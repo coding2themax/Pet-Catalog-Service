@@ -1,0 +1,31 @@
+# Server Configuration
+server:
+  port: 3001
+
+# Application Configuration
+spring:
+  application:
+    name: petstore-catalog-service
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+  # WebFlux Configuration
+  webflux:
+    base-path: /
+
+# Logging Configuration
+logging:
+  level:
+    com.coding2.the.max.petstore.catalog: INFO
+    org.springframework.web.reactive: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Springdoc Configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
