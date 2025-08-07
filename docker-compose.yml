@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  app:
+    image: "petstore-catalog-service"
+    build:
+      context: .
+    container_name: petstore-catalog-app
+    environment:
+      # R2DBC Configuration
+      R2DBC_URL: r2dbc:postgresql://db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-petstore_catalog}
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME:-petstore_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-petstore_password}
+      R2DBC_POOL_INITIAL_SIZE: ${R2DBC_POOL_INITIAL_SIZE:-10}
+      R2DBC_POOL_MAX_SIZE: ${R2DBC_POOL_MAX_SIZE:-20}
+      R2DBC_POOL_MAX_IDLE_TIME: ${R2DBC_POOL_MAX_IDLE_TIME:-30m}
+      # Application Configuration
+      SERVER_PORT: ${SERVER_PORT:-3001}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+    ports:
+      - "${SERVER_PORT:-3001}:${SERVER_PORT:-3001}"
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - petstore-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: petstore-catalog-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-petstore_catalog}
+      POSTGRES_USER: ${POSTGRES_USERNAME:-petstore_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-petstore_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    shm_size: 128mb
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USERNAME:-petstore_user} -d ${POSTGRES_DB:-petstore_catalog}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - petstore-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  petstore-network:
+    driver: bridge
