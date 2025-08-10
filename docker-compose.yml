@@ -39,7 +39,8 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database_schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./src/main/resources/database_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/02-data.sql
     restart: always
     shm_size: 128mb
     healthcheck:
