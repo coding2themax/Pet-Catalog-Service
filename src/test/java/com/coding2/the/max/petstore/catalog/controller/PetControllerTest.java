@@ -68,7 +68,7 @@ class PetControllerTest {
                                 .species(Pet.Species.DOG)
                                 .breed("Golden Retriever")
                                 .age(24)
-                                .ageCategory(Pet.AgeCategory.YOUNG)
+                                .ageCategory("young")
                                 .size(Pet.Size.LARGE)
                                 .gender(Pet.Gender.MALE)
                                 .price(1200.0)
