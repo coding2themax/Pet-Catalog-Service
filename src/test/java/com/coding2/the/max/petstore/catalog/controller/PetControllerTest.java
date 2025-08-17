@@ -24,99 +24,99 @@ import reactor.core.publisher.Mono;
 @WebFluxTest(PetController.class)
 class PetControllerTest {
 
-    @Autowired
-    private WebTestClient webTestClient;
+        @Autowired
+        private WebTestClient webTestClient;
 
-    @MockitoBean
-    private PetService petService;
+        @MockitoBean
+        private PetService petService;
 
-    @Test
-    void testCreatePet() {
-        // Given
-        CreatePetRequest request = CreatePetRequest.builder()
-                .name("Buddy")
-                .species(Pet.Species.DOG)
-                .breed("Golden Retriever")
-                .age(24)
-                .size(Pet.Size.LARGE)
-                .gender(Pet.Gender.MALE)
-                .price(1200.0)
-                .description("Friendly and energetic Golden Retriever")
-                .characteristics(Arrays.asList("friendly", "energetic"))
-                .healthInfo(HealthInfo.builder()
-                        .vaccinated(true)
-                        .spayedNeutered(false)
-                        .healthCertificate(true)
-                        .build())
-                .location(Location.builder()
-                        .storeId("store-123")
-                        .storeName("PetStore Downtown")
-                        .city("San Francisco")
-                        .state("CA")
-                        .zipCode("94105")
-                        .build())
-                .images(Arrays.asList(PetImage.builder()
-                        .url("https://images.petstore.com/pets/buddy-1.jpg")
-                        .altText("Golden Retriever sitting in grass")
-                        .isPrimary(true)
-                        .build()))
-                .build();
+        @Test
+        void testCreatePet() {
+                // Given
+                CreatePetRequest request = CreatePetRequest.builder()
+                                .name("Buddy")
+                                .species(Pet.Species.DOG)
+                                .breed("Golden Retriever")
+                                .age(24)
+                                .size(Pet.Size.LARGE)
+                                .gender(Pet.Gender.MALE)
+                                .price(1200.0)
+                                .description("Friendly and energetic Golden Retriever")
+                                .characteristics(Arrays.asList("friendly", "energetic"))
+                                .healthInfo(HealthInfo.builder()
+                                                .vaccinated(true)
+                                                .spayedNeutered(false)
+                                                .healthCertificate(true)
+                                                .build())
+                                .location(Location.builder()
+                                                .storeId("store-123")
+                                                .storeName("PetStore Downtown")
+                                                .city("San Francisco")
+                                                .state("CA")
+                                                .zipCode("94105")
+                                                .build())
+                                .images(Arrays.asList(PetImage.builder()
+                                                .url("https://images.petstore.com/pets/buddy-1.jpg")
+                                                .altText("Golden Retriever sitting in grass")
+                                                .isPrimary(true)
+                                                .build()))
+                                .build();
 
-        Pet mockPet = Pet.builder()
-                .id("123e4567-e89b-12d3-a456-426614174000")
-                .name("Buddy")
-                .species(Pet.Species.DOG)
-                .breed("Golden Retriever")
-                .age(24)
-                .ageCategory(Pet.AgeCategory.YOUNG)
-                .size(Pet.Size.LARGE)
-                .gender(Pet.Gender.MALE)
-                .price(1200.0)
-                .description("Friendly and energetic Golden Retriever")
-                .characteristics(Arrays.asList("friendly", "energetic"))
-                .availability(Pet.Availability.AVAILABLE)
-                .build();
+                Pet mockPet = Pet.builder()
+                                .id("123e4567-e89b-12d3-a456-426614174000")
+                                .name("Buddy")
+                                .species(Pet.Species.DOG)
+                                .breed("Golden Retriever")
+                                .age(24)
+                                .ageCategory(Pet.AgeCategory.YOUNG)
+                                .size(Pet.Size.LARGE)
+                                .gender(Pet.Gender.MALE)
+                                .price(1200.0)
+                                .description("Friendly and energetic Golden Retriever")
+                                .characteristics(Arrays.asList("friendly", "energetic"))
+                                .availability(Pet.Availability.AVAILABLE)
+                                .build();
 
-        when(petService.createPet(any(CreatePetRequest.class)))
-                .thenReturn(Mono.just(mockPet));
+                when(petService.createPet(any(CreatePetRequest.class)))
+                                .thenReturn(Mono.just(mockPet));
 
-        // When & Then
-        webTestClient.post()
-                .uri("/catalog/v1/pets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody()
-                .jsonPath("$.id").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
-                .jsonPath("$.name").isEqualTo("Buddy")
-                .jsonPath("$.species").isEqualTo("dog")
-                .jsonPath("$.breed").isEqualTo("Golden Retriever")
-                .jsonPath("$.price").isEqualTo(1200.0);
-    }
+                // When & Then
+                webTestClient.post()
+                                .uri("/catalog/v1/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(request)
+                                .exchange()
+                                .expectStatus().isCreated()
+                                .expectBody()
+                                .jsonPath("$.id").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
+                                .jsonPath("$.name").isEqualTo("Buddy")
+                                .jsonPath("$.species").isEqualTo("dog")
+                                .jsonPath("$.breed").isEqualTo("Golden Retriever")
+                                .jsonPath("$.price").isEqualTo(1200.0);
+        }
 
-    @Test
-    void testGetPetById() {
-        // Given
-        String petId = "123e4567-e89b-12d3-a456-426614174000";
-        Pet mockPet = Pet.builder()
-                .id(petId)
-                .name("Buddy")
-                .species(Pet.Species.DOG)
-                .breed("Golden Retriever")
-                .availability(Pet.Availability.AVAILABLE)
-                .build();
+        @Test
+        void testGetPetById() {
+                // Given
+                String petId = "123e4567-e89b-12d3-a456-426614174000";
+                Pet mockPet = Pet.builder()
+                                .id(petId)
+                                .name("Buddy")
+                                .species(Pet.Species.DOG)
+                                .breed("Golden Retriever")
+                                .availability(Pet.Availability.AVAILABLE)
+                                .build();
 
-        when(petService.getPetById(petId))
-                .thenReturn(Mono.just(mockPet));
+                when(petService.getPetById(petId))
+                                .thenReturn(Mono.just(mockPet));
 
-        // When & Then
-        webTestClient.get()
-                .uri("/catalog/v1/pets/" + petId)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.id").isEqualTo(petId)
-                .jsonPath("$.name").isEqualTo("Buddy");
-    }
+                // When & Then
+                webTestClient.get()
+                                .uri("/catalog/v1/pets/" + petId)
+                                .exchange()
+                                .expectStatus().isOk()
+                                .expectBody()
+                                .jsonPath("$.id").isEqualTo(petId)
+                                .jsonPath("$.name").isEqualTo("Buddy");
+        }
 }

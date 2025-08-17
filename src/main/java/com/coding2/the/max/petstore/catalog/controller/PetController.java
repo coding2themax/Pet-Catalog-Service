@@ -29,7 +29,7 @@ public class PetController {
       @RequestParam(required = false) Pet.Species species,
       @RequestParam(required = false) String breed,
       @RequestParam(required = false) Pet.Size size,
-      @RequestParam(name = "age_range", required = false) Pet.AgeCategory ageRange,
+      @RequestParam(name = "age_range", required = false) String ageCategory,
       @RequestParam(name = "price_min", required = false) Double priceMin,
       @RequestParam(name = "price_max", required = false) Double priceMax,
       @RequestParam(required = false) Pet.Availability availability,
@@ -42,7 +42,7 @@ public class PetController {
 
     log.info("Searching pets with filters - species: {}, breed: {}, size: {}", species, breed, size);
 
-    return petService.searchPets(species, breed, size, ageRange, priceMin, priceMax,
+    return petService.searchPets(species, breed, size, ageCategory, priceMin, priceMax,
         availability, gender, vaccinated, sortBy, sortOrder, page, limit)
         .map(ResponseEntity::ok)
         .defaultIfEmpty(ResponseEntity.ok(PetSearchResponse.builder().build()));

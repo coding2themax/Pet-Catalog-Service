@@ -22,18 +22,15 @@ public class WebFluxConfig implements WebFluxConfigurer {
   private final StringToSizeConverter stringToSizeConverter;
   private final StringToAvailabilityConverter stringToAvailabilityConverter;
   private final StringToGenderConverter stringToGenderConverter;
-  private final StringToAgeCategoryConverter stringToAgeCategoryConverter;
 
   public WebFluxConfig(StringToSpeciesConverter stringToSpeciesConverter,
       StringToSizeConverter stringToSizeConverter,
       StringToAvailabilityConverter stringToAvailabilityConverter,
-      StringToGenderConverter stringToGenderConverter,
-      StringToAgeCategoryConverter stringToAgeCategoryConverter) {
+      StringToGenderConverter stringToGenderConverter) {
     this.stringToSpeciesConverter = stringToSpeciesConverter;
     this.stringToSizeConverter = stringToSizeConverter;
     this.stringToAvailabilityConverter = stringToAvailabilityConverter;
     this.stringToGenderConverter = stringToGenderConverter;
-    this.stringToAgeCategoryConverter = stringToAgeCategoryConverter;
   }
 
   @Bean
@@ -49,7 +46,6 @@ public class WebFluxConfig implements WebFluxConfigurer {
     registry.addConverter(stringToSizeConverter);
     registry.addConverter(stringToAvailabilityConverter);
     registry.addConverter(stringToGenderConverter);
-    registry.addConverter(stringToAgeCategoryConverter);
   }
 
   @Override
