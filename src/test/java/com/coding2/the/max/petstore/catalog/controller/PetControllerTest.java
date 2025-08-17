@@ -3,6 +3,7 @@ package com.coding2.the.max.petstore.catalog.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
+import com.coding2.the.max.petstore.catalog.model.AgeCategory;
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
 import com.coding2.the.max.petstore.catalog.model.Location;
 import com.coding2.the.max.petstore.catalog.model.Pet;
@@ -66,12 +68,12 @@ class PetControllerTest {
                                 .id("123e4567-e89b-12d3-a456-426614174000")
                                 .name("Buddy")
                                 .species(Pet.Species.DOG)
-                                .breed("Golden Retriever")
+                                .breedName("Golden Retriever")
                                 .age(24)
-                                .ageCategory("young")
+                                .ageCategory(AgeCategory.YOUNG)
                                 .size(Pet.Size.LARGE)
                                 .gender(Pet.Gender.MALE)
-                                .price(1200.0)
+                                .price(BigDecimal.valueOf(1200.0))
                                 .description("Friendly and energetic Golden Retriever")
                                 .characteristics(Arrays.asList("friendly", "energetic"))
                                 .availability(Pet.Availability.AVAILABLE)
@@ -91,7 +93,7 @@ class PetControllerTest {
                                 .jsonPath("$.id").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
                                 .jsonPath("$.name").isEqualTo("Buddy")
                                 .jsonPath("$.species").isEqualTo("dog")
-                                .jsonPath("$.breed").isEqualTo("Golden Retriever")
+                                .jsonPath("$.breed_name").isEqualTo("Golden Retriever")
                                 .jsonPath("$.price").isEqualTo(1200.0);
         }
 
@@ -103,7 +105,7 @@ class PetControllerTest {
                                 .id(petId)
                                 .name("Buddy")
                                 .species(Pet.Species.DOG)
-                                .breed("Golden Retriever")
+                                .breedName("Golden Retriever")
                                 .availability(Pet.Availability.AVAILABLE)
                                 .build();
 

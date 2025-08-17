@@ -1,11 +1,13 @@
 package com.coding2.the.max.petstore.catalog.service;
 
 import com.coding2.the.max.petstore.catalog.dto.*;
+import com.coding2.the.max.petstore.catalog.model.AgeCategory;
 import com.coding2.the.max.petstore.catalog.model.Pet;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,12 +27,13 @@ public class PetServiceLocalData implements PetService {
 
     return Flux.fromIterable(petStorage.values())
         .filter(pet -> species == null || pet.getSpecies().equals(species))
-        .filter(pet -> breed == null || pet.getBreed().toLowerCase().contains(breed.toLowerCase()))
+        .filter(pet -> breed == null ||
+            (pet.getBreedName() != null && pet.getBreedName().toLowerCase().contains(breed.toLowerCase())))
         .filter(pet -> size == null || pet.getSize().equals(size))
         .filter(pet -> ageCategory == null
-            || (pet.getAgeCategory() != null && pet.getAgeCategory().equalsIgnoreCase(ageCategory)))
-        .filter(pet -> priceMin == null || pet.getPrice() >= priceMin)
-        .filter(pet -> priceMax == null || pet.getPrice() <= priceMax)
+            || (pet.getAgeCategory() != null && pet.getAgeCategory().name().equalsIgnoreCase(ageCategory)))
+        .filter(pet -> priceMin == null || pet.getPrice().compareTo(BigDecimal.valueOf(priceMin)) >= 0)
+        .filter(pet -> priceMax == null || pet.getPrice().compareTo(BigDecimal.valueOf(priceMax)) <= 0)
         .filter(pet -> availability == null || pet.getAvailability().equals(availability))
         .filter(pet -> gender == null || pet.getGender().equals(gender))
         .filter(pet -> vaccinated == null ||
@@ -73,11 +76,11 @@ public class PetServiceLocalData implements PetService {
         .id(UUID.randomUUID().toString())
         .name(request.getName())
         .species(request.getSpecies())
-        .breed(request.getBreed())
+        .breedName(request.getBreed()) // Store breed name in transient field for now
         .age(request.getAge())
         .size(request.getSize())
         .gender(request.getGender())
-        .price(request.getPrice())
+        .price(BigDecimal.valueOf(request.getPrice()))
         .description(request.getDescription())
         .characteristics(request.getCharacteristics())
         .healthInfo(request.getHealthInfo())
@@ -112,7 +115,7 @@ public class PetServiceLocalData implements PetService {
             existingPet.setAgeCategory(determineAgeCategory(request.getAge(), existingPet.getSpecies()));
           }
           if (request.getPrice() != null)
-            existingPet.setPrice(request.getPrice());
+            existingPet.setPrice(BigDecimal.valueOf(request.getPrice()));
           if (request.getDescription() != null)
             existingPet.setDescription(request.getDescription());
           if (request.getCharacteristics() != null)
@@ -146,33 +149,33 @@ public class PetServiceLocalData implements PetService {
         });
   }
 
-  private String determineAgeCategory(Integer ageInMonths, Pet.Species species) {
+  private AgeCategory determineAgeCategory(Integer ageInMonths, Pet.Species species) {
     if (ageInMonths == null || species == null)
       return null;
     if (species == Pet.Species.DOG) {
       if (ageInMonths <= 12)
-        return "puppy";
+        return AgeCategory.PUPPY;
       if (ageInMonths <= 24)
-        return "young";
+        return AgeCategory.YOUNG;
       if (ageInMonths <= 84)
-        return "adult";
-      return "senior";
+        return AgeCategory.ADULT;
+      return AgeCategory.SENIOR;
     } else if (species == Pet.Species.CAT) {
       if (ageInMonths <= 6)
-        return "puppy"; // kitten mapped to puppy for legacy
+        return AgeCategory.PUPPY; // kitten mapped to puppy for legacy
       if (ageInMonths <= 24)
-        return "young";
+        return AgeCategory.YOUNG;
       if (ageInMonths <= 96)
-        return "adult";
-      return "senior";
+        return AgeCategory.ADULT;
+      return AgeCategory.SENIOR;
     } else {
       if (ageInMonths <= 6)
-        return "puppy";
+        return AgeCategory.PUPPY;
       if (ageInMonths <= 18)
-        return "young";
+        return AgeCategory.YOUNG;
       if (ageInMonths <= 60)
-        return "adult";
-      return "senior";
+        return AgeCategory.ADULT;
+      return AgeCategory.SENIOR;
     }
   }
 
@@ -181,18 +184,18 @@ public class PetServiceLocalData implements PetService {
 
     switch (sortBy != null ? sortBy : "date_added") {
       case "price":
-        comparator = Comparator.comparing(Pet::getPrice);
+        comparator = Comparator.comparing(Pet::getPrice, Comparator.nullsLast(Comparator.naturalOrder()));
         break;
       case "age":
-        comparator = Comparator.comparing(Pet::getAge);
+        comparator = Comparator.comparing(Pet::getAge, Comparator.nullsLast(Comparator.naturalOrder()));
         break;
       case "popularity":
         // For demo purposes, sort by creation date as popularity
-        comparator = Comparator.comparing(Pet::getCreatedAt);
+        comparator = Comparator.comparing(Pet::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));
         break;
       case "date_added":
       default:
-        comparator = Comparator.comparing(Pet::getCreatedAt);
+        comparator = Comparator.comparing(Pet::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));
         break;
     }
 

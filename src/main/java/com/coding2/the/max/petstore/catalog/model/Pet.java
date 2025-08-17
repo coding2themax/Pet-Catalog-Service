@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -25,30 +26,47 @@ public class Pet {
   @Id
   private String id;
   private String name;
-  private Species species;
-  private String breed;
   private Integer age;
-  @JsonProperty("age_category")
-  @Column("age_category")
-  private String ageCategory;
   private Size size;
   private Gender gender;
-  private Double price;
+  private BigDecimal price;
   private String description;
-  // Mapped via pet_characteristics table
+  private Availability availability;
+
+  // Foreign key references
+  @JsonProperty("location_id")
+  @Column("location_id")
+  private Long locationId;
+  @JsonProperty("health_info_id")
+  @Column("health_info_id")
+  private Long healthInfoId;
+  @JsonProperty("breed_id")
+  @Column("breed_id")
+  private Long breedId;
+
+  // Transient fields for related data (populated via joins or separate queries)
   @Transient
   private List<String> characteristics;
   @JsonProperty("health_info")
-  // Referenced via pets.health_info_id
   @Transient
   private HealthInfo healthInfo;
-  private Availability availability;
-  // Mapped via pet_images table
   @Transient
   private List<PetImage> images;
-  // Referenced via pets.location_id
   @Transient
   private Location location;
+  @Transient
+  private Breed breed;
+
+  // Derived fields from views/calculations
+  @JsonProperty("age_category")
+  @Transient
+  private AgeCategory ageCategory;
+  @Transient
+  private Species species; // Derived from breed
+  @JsonProperty("breed_name")
+  @Transient
+  private String breedName; // Derived from breed
+
   @JsonProperty("created_at")
   @CreatedDate
   @Column("created_at")
