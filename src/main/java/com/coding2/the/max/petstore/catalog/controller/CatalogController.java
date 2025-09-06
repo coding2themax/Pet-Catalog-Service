@@ -1,15 +1,18 @@
 package com.coding2.the.max.petstore.catalog.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.coding2.the.max.petstore.catalog.dto.BreedsResponse;
 import com.coding2.the.max.petstore.catalog.dto.SpeciesResponse;
 import com.coding2.the.max.petstore.catalog.model.Pet;
-import com.coding2.the.max.petstore.catalog.service.CatalogPostGresService;
 import com.coding2.the.max.petstore.catalog.service.CatalogService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
