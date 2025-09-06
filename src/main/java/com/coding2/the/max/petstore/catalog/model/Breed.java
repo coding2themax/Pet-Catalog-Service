@@ -11,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,6 +26,12 @@ public class Breed {
   private String name;
 
   private Pet.Species species;
+
+  @JsonProperty("typical_size")
+  @Column("typical_size")
+  private Pet.Size typicalSize;
+
+  private List<String> characteristics;
 
   @JsonProperty("created_at")
   @CreatedDate

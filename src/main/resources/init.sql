@@ -45,20 +45,38 @@ INSERT INTO health_info (vaccinated, spayed_neutered, health_certificate, last_v
 (true, false, false, '2025-06-25'),
 (false, true, true, '2025-07-05');
 
--- Insert breeds (name, species) required for pets.breed_id FK
-INSERT INTO breeds (name, species) VALUES
-('Golden Retriever','dog'),
-('Persian','cat'),
-('Beagle','dog'),
-('Maine Coon','cat'),
-('French Bulldog','dog'),
-('British Shorthair','cat'),
-('German Shepherd','dog'),
-('Siamese','cat'),
-('Labrador Retriever','dog'),
-('Cockatiel','bird'),
-('Goldfish','fish'),
-('Bearded Dragon','reptile');
+-- Insert breeds (name, species, typical_size, characteristics) required for pets.breed_id FK
+INSERT INTO breeds (name, species, typical_size, characteristics) VALUES
+-- Dog breeds
+('Golden Retriever','dog','large',ARRAY['friendly', 'intelligent', 'active']),
+('Labrador Retriever','dog','large',ARRAY['friendly', 'outgoing', 'active']),
+('Bulldog','dog','medium',ARRAY['docile', 'willful', 'friendly']),
+('Poodle','dog','medium',ARRAY['intelligent', 'active', 'elegant']),
+('Chihuahua','dog','small',ARRAY['sassy', 'graceful', 'charming']),
+('Beagle','dog','medium',ARRAY['friendly', 'curious', 'merry']),
+('French Bulldog','dog','small',ARRAY['adaptable', 'playful', 'smart']),
+('German Shepherd','dog','large',ARRAY['confident', 'courageous', 'smart']),
+-- Cat breeds
+('Persian','cat','medium',ARRAY['quiet', 'docile', 'sweet']),
+('Maine Coon','cat','large',ARRAY['gentle', 'friendly', 'intelligent']),
+('Siamese','cat','medium',ARRAY['vocal', 'intelligent', 'active']),
+('British Shorthair','cat','medium',ARRAY['calm', 'friendly', 'independent']),
+-- Bird breeds
+('Canary','bird','small',ARRAY['melodious', 'cheerful', 'social']),
+('Parakeet','bird','small',ARRAY['playful', 'social', 'intelligent']),
+('Macaw','bird','large',ARRAY['intelligent', 'social', 'colorful']),
+('Cockatiel','bird','small',ARRAY['social', 'intelligent', 'melodious']),
+-- Fish breeds
+('Goldfish','fish','small',ARRAY['hardy', 'peaceful', 'colorful']),
+('Betta','fish','small',ARRAY['colorful', 'territorial', 'hardy']),
+('Angel Fish','fish','medium',ARRAY['graceful', 'peaceful', 'elegant']),
+-- Reptile breeds
+('Leopard Gecko','reptile','small',ARRAY['docile', 'easy-care', 'nocturnal']),
+('Bearded Dragon','reptile','medium',ARRAY['calm', 'social', 'hardy']),
+-- Small mammal breeds
+('Holland Lop','small-mammal','small',ARRAY['gentle', 'calm', 'friendly']),
+('Guinea Pig','small-mammal','small',ARRAY['social', 'gentle', 'vocal']),
+('Hamster','small-mammal','small',ARRAY['active', 'curious', 'independent']);
 
 -- Insert test pets (schema now: id, name, age, size, gender, price, description, availability, location_id, health_info_id, breed_id)
 INSERT INTO pets (id, name, age, size, gender, price, description, availability, location_id, health_info_id, breed_id) VALUES
@@ -77,24 +95,24 @@ INSERT INTO pets (id, name, age, size, gender, price, description, availability,
 
 -- Insert pet images
 INSERT INTO pet_images (pet_id, url, alt_text, is_primary) VALUES
-('PET001','https://example.com/images/buddy-1.jpg','Buddy the Golden Retriever sitting in grass',true),
-('PET001','https://example.com/images/buddy-2.jpg','Buddy playing fetch with a tennis ball',false),
-('PET001','https://example.com/images/buddy-3.jpg','Buddy portrait headshot',false),
-('PET002','https://example.com/images/luna-1.jpg','Luna the Persian cat lounging',true),
-('PET002','https://example.com/images/luna-2.jpg','Luna close-up showing beautiful eyes',false),
-('PET003','https://example.com/images/charlie-1.jpg','Charlie the Beagle puppy playing',true),
-('PET003','https://example.com/images/charlie-2.jpg','Charlie sleeping in his bed',false),
-('PET004','https://example.com/images/whiskers-1.jpg','Whiskers the Maine Coon full body shot',true),
-('PET004','https://example.com/images/whiskers-2.jpg','Whiskers showing off his fluffy tail',false),
-('PET005','https://example.com/images/bella-1.jpg','Bella the French Bulldog portrait',true),
-('PET006','https://example.com/images/milo-1.jpg','Milo the British Shorthair kitten',true),
-('PET007','https://example.com/images/rocky-1.jpg','Rocky the German Shepherd standing alert',true),
-('PET007','https://example.com/images/rocky-2.jpg','Rocky in training pose',false),
-('PET008','https://example.com/images/princess-1.jpg','Princess the Siamese cat resting',true),
-('PET009','https://example.com/images/max-1.jpg','Max the Labrador Retriever by water',true),
-('PET010','https://example.com/images/coco-1.jpg','Coco the Cockatiel on perch',true),
-('PET011','https://example.com/images/nemo-1.jpg','Nemo the Goldfish in aquarium',true),
-('PET012','https://example.com/images/spike-1.jpg','Spike the Bearded Dragon basking',true);
+('PET001','https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&h=400&fit=crop&auto=format','Buddy the Golden Retriever sitting in grass',true),
+('PET001','https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&h=400&fit=crop&auto=format','Buddy playing fetch with a tennis ball',false),
+('PET001','https://images.unsplash.com/photo-1606721977440-8d4f52b0c1e1?w=600&h=400&fit=crop&auto=format','Buddy portrait headshot',false),
+('PET002','https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&h=400&fit=crop&auto=format','Luna the Persian cat lounging',true),
+('PET002','https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?w=600&h=400&fit=crop&auto=format','Luna close-up showing beautiful eyes',false),
+('PET003','https://images.unsplash.com/photo-1544568100-847a948585b9?w=600&h=400&fit=crop&auto=format','Charlie the Beagle puppy playing',true),
+('PET003','https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&h=400&fit=crop&auto=format','Charlie sleeping in his bed',false),
+('PET004','https://images.unsplash.com/photo-1513245543132-31f507417b26?w=600&h=400&fit=crop&auto=format','Whiskers the Maine Coon full body shot',true),
+('PET004','https://images.unsplash.com/photo-1574231164645-d6f0e8553590?w=600&h=400&fit=crop&auto=format','Whiskers showing off his fluffy tail',false),
+('PET005','https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&h=400&fit=crop&auto=format','Bella the French Bulldog portrait',true),
+('PET006','https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=600&h=400&fit=crop&auto=format','Milo the British Shorthair kitten',true),
+('PET007','https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=600&h=400&fit=crop&auto=format','Rocky the German Shepherd standing alert',true),
+('PET007','https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=600&h=400&fit=crop&auto=format','Rocky in training pose',false),
+('PET008','https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?w=600&h=400&fit=crop&auto=format','Princess the Siamese cat resting',true),
+('PET009','https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=600&h=400&fit=crop&auto=format','Max the Labrador Retriever by water',true),
+('PET010','https://images.unsplash.com/photo-1574781330855-d0db2706b3d0?w=600&h=400&fit=crop&auto=format','Coco the Cockatiel on perch',true),
+('PET011','https://images.unsplash.com/photo-1520637836862-4d197d17c958?w=600&h=400&fit=crop&auto=format','Nemo the Goldfish in aquarium',true),
+('PET012','https://images.unsplash.com/photo-1612648953069-b49b2a23b2f4?w=600&h=400&fit=crop&auto=format','Spike the Bearded Dragon basking',true);
 
 -- Insert characteristics (added missing 'peaceful')
 INSERT INTO characteristics (name) VALUES

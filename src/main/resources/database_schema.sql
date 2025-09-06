@@ -110,6 +110,8 @@ CREATE TABLE IF NOT EXISTS breeds (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     species species_enum NOT NULL,
+    typical_size size_enum,
+    characteristics TEXT[], -- Array of characteristic names
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (name, species)
 );
