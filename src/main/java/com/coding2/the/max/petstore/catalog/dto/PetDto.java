@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PetDto {
+public class PetDTO {
 
   private String id;
   private String name;
