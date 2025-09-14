@@ -1,5 +1,10 @@
-package com.coding2.the.max.petstore.catalog.model;
+package com.coding2.the.max.petstore.catalog.domain.entity;
 
+import com.coding2.the.max.petstore.catalog.model.AgeCategory;
+import com.coding2.the.max.petstore.catalog.model.Breed;
+import com.coding2.the.max.petstore.catalog.model.HealthInfo;
+import com.coding2.the.max.petstore.catalog.model.Location;
+import com.coding2.the.max.petstore.catalog.model.PetImage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -21,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table("pets")
-public class Pet {
+public class PetEntity {
 
   @Id
   private String id;

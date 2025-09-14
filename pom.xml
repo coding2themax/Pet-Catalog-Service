@@ -110,6 +110,12 @@
 			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
 			<version>2.8.9</version>
 		</dependency>
+		<!-- Needed by OpenAPI generated models for Nullable support -->
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -166,6 +172,7 @@
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
+					<excludes>**/target/generated-sources/openapi/**</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -174,6 +181,49 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.15.0</version>
+				<executions>
+					<execution>
+						<id>generate-openapi</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi.json</inputSpec>
+							<generatorName>spring</generatorName>
+							<!-- Generate Spring WebFlux interfaces compatible with Spring Boot 3 / Jakarta -->
+							<library>spring-boot</library>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<addCompileSourceRoot>true</addCompileSourceRoot>
+							<apiPackage>com.coding2.the.max.petstore.catalog.openapi.api</apiPackage>
+							<modelPackage>com.coding2.the.max.petstore.catalog.openapi.model</modelPackage>
+							<invokerPackage>com.coding2.the.max.petstore.catalog.openapi</invokerPackage>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<!-- The spec may evolve; keep validation off to avoid build breaks, we'll validate in
+							CI separately. -->
+							<validateSpec>false</validateSpec>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+								<reactive>true</reactive>
+								<useJakartaEe>true</useJakartaEe>
+								<useSpringBoot3>true</useSpringBoot3>
+								<dateLibrary>java8</dateLibrary>
+								<generateApiTests>false</generateApiTests>
+								<generateModelTests>false</generateModelTests>
+								<hideGenerationTimestamp>true</hideGenerationTimestamp>
+								<additionalModelTypeAnnotations>@SuppressWarnings("unused")</additionalModelTypeAnnotations>
+
+							</configOptions>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

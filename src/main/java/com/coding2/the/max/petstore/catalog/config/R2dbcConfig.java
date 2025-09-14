@@ -1,6 +1,5 @@
 package com.coding2.the.max.petstore.catalog.config;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -10,6 +9,8 @@ import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
 import org.springframework.data.r2dbc.dialect.PostgresDialect;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.lang.NonNull;
+
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 
 @Configuration
 @EnableR2dbcRepositories(basePackages = "com.coding2.the.max.petstore.catalog.repository")
@@ -25,25 +26,25 @@ public class R2dbcConfig {
   }
 
   @ReadingConverter
-  static class SpeciesReadingConverter implements Converter<String, Pet.Species> {
+  static class SpeciesReadingConverter implements Converter<String, PetEntity.Species> {
     @Override
-    public Pet.Species convert(@NonNull String source) {
+    public PetEntity.Species convert(@NonNull String source) {
       return switch (source.toLowerCase()) {
-        case "dog" -> Pet.Species.DOG;
-        case "cat" -> Pet.Species.CAT;
-        case "bird" -> Pet.Species.BIRD;
-        case "fish" -> Pet.Species.FISH;
-        case "reptile" -> Pet.Species.REPTILE;
-        case "small-mammal" -> Pet.Species.SMALL_MAMMAL;
+        case "dog" -> PetEntity.Species.DOG;
+        case "cat" -> PetEntity.Species.CAT;
+        case "bird" -> PetEntity.Species.BIRD;
+        case "fish" -> PetEntity.Species.FISH;
+        case "reptile" -> PetEntity.Species.REPTILE;
+        case "small-mammal" -> PetEntity.Species.SMALL_MAMMAL;
         default -> throw new IllegalArgumentException("Unknown species: " + source);
       };
     }
   }
 
   @WritingConverter
-  static class SpeciesWritingConverter implements Converter<Pet.Species, String> {
+  static class SpeciesWritingConverter implements Converter<PetEntity.Species, String> {
     @Override
-    public String convert(@NonNull Pet.Species source) {
+    public String convert(@NonNull PetEntity.Species source) {
       return switch (source) {
         case DOG -> "dog";
         case CAT -> "cat";
@@ -56,23 +57,23 @@ public class R2dbcConfig {
   }
 
   @ReadingConverter
-  static class SizeReadingConverter implements Converter<String, Pet.Size> {
+  static class SizeReadingConverter implements Converter<String, PetEntity.Size> {
     @Override
-    public Pet.Size convert(@NonNull String source) {
+    public PetEntity.Size convert(@NonNull String source) {
       return switch (source.toLowerCase()) {
-        case "small" -> Pet.Size.SMALL;
-        case "medium" -> Pet.Size.MEDIUM;
-        case "large" -> Pet.Size.LARGE;
-        case "extra-large" -> Pet.Size.EXTRA_LARGE;
+        case "small" -> PetEntity.Size.SMALL;
+        case "medium" -> PetEntity.Size.MEDIUM;
+        case "large" -> PetEntity.Size.LARGE;
+        case "extra-large" -> PetEntity.Size.EXTRA_LARGE;
         default -> throw new IllegalArgumentException("Unknown size: " + source);
       };
     }
   }
 
   @WritingConverter
-  static class SizeWritingConverter implements Converter<Pet.Size, String> {
+  static class SizeWritingConverter implements Converter<PetEntity.Size, String> {
     @Override
-    public String convert(@NonNull Pet.Size source) {
+    public String convert(@NonNull PetEntity.Size source) {
       return switch (source) {
         case SMALL -> "small";
         case MEDIUM -> "medium";

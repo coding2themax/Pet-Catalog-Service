@@ -1,19 +1,19 @@
-package com.coding2.the.max.petstore.catalog.service;
+package com.coding2.the.max.petstore.catalog.domain.service;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
 import com.coding2.the.max.petstore.catalog.dto.PetResponseDTO;
 import com.coding2.the.max.petstore.catalog.dto.PetSearchResponse;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
-import com.coding2.the.max.petstore.catalog.model.Pet;
 
 import reactor.core.publisher.Mono;
 
 public interface PetService {
 
-  Mono<PetSearchResponse> searchPets(Pet.Species species, String breed, Pet.Size size,
+  Mono<PetSearchResponse> searchPets(PetEntity.Species species, String breed, PetEntity.Size size,
       String ageCategory, Double priceMin, Double priceMax,
-      Pet.Availability availability, Pet.Gender gender,
+      PetEntity.Availability availability, PetEntity.Gender gender,
       Boolean vaccinated, String sortBy, String sortOrder,
       Integer page, Integer limit);
 

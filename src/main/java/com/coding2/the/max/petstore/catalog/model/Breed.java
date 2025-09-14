@@ -1,5 +1,6 @@
 package com.coding2.the.max.petstore.catalog.model;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,11 +26,11 @@ public class Breed {
 
   private String name;
 
-  private Pet.Species species;
+  private PetEntity.Species species;
 
   @JsonProperty("typical_size")
   @Column("typical_size")
-  private Pet.Size typicalSize;
+  private PetEntity.Size typicalSize;
 
   private List<String> characteristics;
 

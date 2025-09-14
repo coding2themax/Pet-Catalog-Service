@@ -1,8 +1,10 @@
 package com.coding2.the.max.petstore.catalog.service;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.service.CatalogPostGresService;
 import com.coding2.the.max.petstore.catalog.dto.BreedsResponse;
 import com.coding2.the.max.petstore.catalog.dto.SpeciesResponse;
-import com.coding2.the.max.petstore.catalog.model.Pet;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -133,7 +135,7 @@ class CatalogPostGresServiceTest {
     insertTestBreed("Persian", "cat", "medium", new String[] { "calm", "affectionate" });
 
     // When - Get breeds filtered by DOG species
-    StepVerifier.create(catalogService.getBreeds(Pet.Species.DOG))
+    StepVerifier.create(catalogService.getBreeds(PetEntity.Species.DOG))
         .assertNext(response -> {
           assertThat(response).isNotNull();
           assertThat(response.getBreeds()).hasSize(2);
@@ -168,7 +170,7 @@ class CatalogPostGresServiceTest {
     insertTestBreed("Golden Retriever", "dog", "large", new String[] { "friendly" });
 
     // When - Filter by BIRD species (not present in data)
-    StepVerifier.create(catalogService.getBreeds(Pet.Species.BIRD))
+    StepVerifier.create(catalogService.getBreeds(PetEntity.Species.BIRD))
         .assertNext(response -> {
           assertThat(response).isNotNull();
           assertThat(response.getBreeds()).isEmpty();
@@ -276,7 +278,7 @@ class CatalogPostGresServiceTest {
               .filter(breed -> breed.getName().equals("Chihuahua"))
               .findFirst()
               .orElseThrow();
-          assertThat(chihuahua.getTypicalSize()).isEqualTo(Pet.Size.SMALL);
+          assertThat(chihuahua.getTypicalSize()).isEqualTo(PetEntity.Size.SMALL);
           assertThat(chihuahua.getCharacteristics())
               .containsExactlyInAnyOrder("energetic", "alert", "loyal");
 
@@ -285,7 +287,7 @@ class CatalogPostGresServiceTest {
               .filter(breed -> breed.getName().equals("Great Dane"))
               .findFirst()
               .orElseThrow();
-          assertThat(greatDane.getTypicalSize()).isEqualTo(Pet.Size.EXTRA_LARGE);
+          assertThat(greatDane.getTypicalSize()).isEqualTo(PetEntity.Size.EXTRA_LARGE);
           assertThat(greatDane.getCharacteristics())
               .containsExactlyInAnyOrder("gentle", "friendly", "patient");
         })

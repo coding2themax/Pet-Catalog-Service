@@ -1,9 +1,10 @@
-package com.coding2.the.max.petstore.catalog.controller;
+package com.coding2.the.max.petstore.catalog.api.controller;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.service.PetService;
 import com.coding2.the.max.petstore.catalog.dto.*;
 import com.coding2.the.max.petstore.catalog.exception.PetNotFoundException;
-import com.coding2.the.max.petstore.catalog.model.Pet;
-import com.coding2.the.max.petstore.catalog.service.PetService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,14 +27,14 @@ public class PetController {
 
   @GetMapping
   public Mono<ResponseEntity<PetSearchResponse>> searchPets(
-      @RequestParam(required = false) Pet.Species species,
+      @RequestParam(required = false) PetEntity.Species species,
       @RequestParam(required = false) String breed,
-      @RequestParam(required = false) Pet.Size size,
+      @RequestParam(required = false) PetEntity.Size size,
       @RequestParam(name = "age_range", required = false) String ageCategory,
       @RequestParam(name = "price_min", required = false) Double priceMin,
       @RequestParam(name = "price_max", required = false) Double priceMax,
-      @RequestParam(required = false) Pet.Availability availability,
-      @RequestParam(required = false) Pet.Gender gender,
+      @RequestParam(required = false) PetEntity.Availability availability,
+      @RequestParam(required = false) PetEntity.Gender gender,
       @RequestParam(required = false) Boolean vaccinated,
       @RequestParam(name = "sort_by", required = false, defaultValue = "date_added") @Pattern(regexp = "price|age|date_added|popularity") String sortBy,
       @RequestParam(name = "sort_order", required = false, defaultValue = "desc") @Pattern(regexp = "asc|desc") String sortOrder,

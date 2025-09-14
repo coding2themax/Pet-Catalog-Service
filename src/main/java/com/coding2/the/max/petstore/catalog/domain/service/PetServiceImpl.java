@@ -1,7 +1,8 @@
-package com.coding2.the.max.petstore.catalog.service;
+package com.coding2.the.max.petstore.catalog.domain.service;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.dto.*;
-import com.coding2.the.max.petstore.catalog.model.Pet;
+
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -12,9 +13,9 @@ import java.util.*;
 public class PetServiceImpl implements PetService {
 
   @Override
-  public Mono<PetSearchResponse> searchPets(Pet.Species species, String breed, Pet.Size size,
+  public Mono<PetSearchResponse> searchPets(PetEntity.Species species, String breed, PetEntity.Size size,
       String ageCategory, Double priceMin, Double priceMax,
-      Pet.Availability availability, Pet.Gender gender,
+      PetEntity.Availability availability, PetEntity.Gender gender,
       Boolean vaccinated, String sortBy, String sortOrder,
       Integer page, Integer limit) {
 

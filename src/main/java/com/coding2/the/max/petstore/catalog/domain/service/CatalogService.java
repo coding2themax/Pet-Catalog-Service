@@ -1,14 +1,14 @@
-package com.coding2.the.max.petstore.catalog.service;
+package com.coding2.the.max.petstore.catalog.domain.service;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.dto.BreedsResponse;
 import com.coding2.the.max.petstore.catalog.dto.SpeciesResponse;
-import com.coding2.the.max.petstore.catalog.model.Pet;
 
 import reactor.core.publisher.Mono;
 
 public interface CatalogService {
 
-  Mono<BreedsResponse> getBreeds(Pet.Species species);
+  Mono<BreedsResponse> getBreeds(PetEntity.Species species);
 
   Mono<SpeciesResponse> getSpecies();
 

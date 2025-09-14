@@ -1,10 +1,11 @@
-package com.coding2.the.max.petstore.catalog.service;
+package com.coding2.the.max.petstore.catalog.domain.service;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.repository.BreedRepository;
 import com.coding2.the.max.petstore.catalog.dto.BreedsResponse;
 import com.coding2.the.max.petstore.catalog.dto.SpeciesResponse;
 import com.coding2.the.max.petstore.catalog.model.Breed;
-import com.coding2.the.max.petstore.catalog.model.Pet;
-import com.coding2.the.max.petstore.catalog.repository.BreedRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -17,7 +18,7 @@ public class CatalogPostGresService implements CatalogService {
   private final BreedRepository breedRepository;
 
   @Override
-  public Mono<BreedsResponse> getBreeds(Pet.Species species) {
+  public Mono<BreedsResponse> getBreeds(PetEntity.Species species) {
     Flux<Breed> breedsFlux = species != null
         ? breedRepository.findBySpecies(species)
         : breedRepository.findAll();
@@ -47,7 +48,7 @@ public class CatalogPostGresService implements CatalogService {
         .map(speciesList -> SpeciesResponse.builder().species(speciesList).build());
   }
 
-  private String getDisplayName(Pet.Species species) {
+  private String getDisplayName(PetEntity.Species species) {
     switch (species) {
       case DOG:
         return "Dogs";

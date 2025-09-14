@@ -1,6 +1,6 @@
 package com.coding2.the.max.petstore.catalog.dto;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +25,7 @@ public class BreedsResponse {
     private String name;
     private String species;
     @JsonProperty("typical_size")
-    private Pet.Size typicalSize;
+    private PetEntity.Size typicalSize;
     private List<String> characteristics;
   }
 }

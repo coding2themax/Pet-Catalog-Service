@@ -3,7 +3,7 @@ package com.coding2.the.max.petstore.catalog.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -19,10 +19,10 @@ public class PetResponseDTO {
 
   private String id;
   private String name;
-  private Pet.Species species;
+  private PetEntity.Species species;
   private String breed;
   private Integer age;
-  private Pet.Gender gender;
+  private PetEntity.Gender gender;
   private BigDecimal price;
   private String description;
 
@@ -42,7 +42,7 @@ public class PetResponseDTO {
   @JsonProperty("spayedNeutered")
   private Boolean spayedNeutered;
 
-  private Pet.Size size;
+  private PetEntity.Size size;
 
   @JsonProperty("energyLevel")
   private String energyLevel;

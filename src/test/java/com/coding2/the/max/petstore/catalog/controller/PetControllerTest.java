@@ -15,15 +15,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import com.coding2.the.max.petstore.catalog.api.controller.PetController;
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.service.PetService;
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
 import com.coding2.the.max.petstore.catalog.dto.PetResponseDTO;
 import com.coding2.the.max.petstore.catalog.exception.GlobalExceptionHandler;
 import com.coding2.the.max.petstore.catalog.exception.PetNotFoundException;
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
 import com.coding2.the.max.petstore.catalog.model.Location;
-import com.coding2.the.max.petstore.catalog.model.Pet;
 import com.coding2.the.max.petstore.catalog.model.PetImage;
-import com.coding2.the.max.petstore.catalog.service.PetService;
 
 import reactor.core.publisher.Mono;
 
@@ -41,11 +42,11 @@ class PetControllerTest {
                 // Given
                 CreatePetRequest request = CreatePetRequest.builder()
                                 .name("Buddy")
-                                .species(Pet.Species.DOG)
+                                .species(PetEntity.Species.DOG)
                                 .breed("Golden Retriever")
                                 .age(24)
-                                .size(Pet.Size.LARGE)
-                                .gender(Pet.Gender.MALE)
+                                .size(PetEntity.Size.LARGE)
+                                .gender(PetEntity.Gender.MALE)
                                 .price(1200.0)
                                 .description("Friendly and energetic Golden Retriever")
                                 .characteristics(Arrays.asList("friendly", "energetic"))
@@ -71,11 +72,11 @@ class PetControllerTest {
                 PetResponseDTO mockPetResponse = PetResponseDTO.builder()
                                 .id("123e4567-e89b-12d3-a456-426614174000")
                                 .name("Buddy")
-                                .species(Pet.Species.DOG)
+                                .species(PetEntity.Species.DOG)
                                 .breed("Golden Retriever")
                                 .age(24)
-                                .size(Pet.Size.LARGE)
-                                .gender(Pet.Gender.MALE)
+                                .size(PetEntity.Size.LARGE)
+                                .gender(PetEntity.Gender.MALE)
                                 .price(BigDecimal.valueOf(1200.0))
                                 .description("Friendly and energetic Golden Retriever")
                                 .characteristics(Arrays.asList("friendly", "energetic"))
@@ -116,11 +117,11 @@ class PetControllerTest {
                 PetResponseDTO mockPetResponse = PetResponseDTO.builder()
                                 .id(petId)
                                 .name("Buddy")
-                                .species(Pet.Species.DOG)
+                                .species(PetEntity.Species.DOG)
                                 .breed("Golden Retriever")
                                 .age(24)
-                                .size(Pet.Size.LARGE)
-                                .gender(Pet.Gender.MALE)
+                                .size(PetEntity.Size.LARGE)
+                                .gender(PetEntity.Gender.MALE)
                                 .price(BigDecimal.valueOf(1200.0))
                                 .isAvailable(true)
                                 .build();

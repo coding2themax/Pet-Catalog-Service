@@ -1,8 +1,8 @@
 package com.coding2.the.max.petstore.catalog.dto;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
 import com.coding2.the.max.petstore.catalog.model.Location;
-import com.coding2.the.max.petstore.catalog.model.Pet;
 import com.coding2.the.max.petstore.catalog.model.PetImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class CreatePetRequest {
   private String name;
 
   @NotNull
-  private Pet.Species species;
+  private PetEntity.Species species;
 
   @NotBlank
   private String breed;
@@ -33,8 +33,8 @@ public class CreatePetRequest {
   @Positive
   private Integer age;
 
-  private Pet.Size size;
-  private Pet.Gender gender;
+  private PetEntity.Size size;
+  private PetEntity.Gender gender;
 
   @NotNull
   @Positive
