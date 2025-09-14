@@ -1,20 +1,21 @@
 package com.coding2.the.max.petstore.catalog.dto;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.coding2.the.max.petstore.catalog.model.Pet;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PetDTO {
+public class PetResponseDTO {
 
   private String id;
   private String name;

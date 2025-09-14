@@ -9,12 +9,16 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
-import com.coding2.the.max.petstore.catalog.model.AgeCategory;
+import com.coding2.the.max.petstore.catalog.dto.PetResponseDTO;
+import com.coding2.the.max.petstore.catalog.exception.GlobalExceptionHandler;
+import com.coding2.the.max.petstore.catalog.exception.PetNotFoundException;
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
 import com.coding2.the.max.petstore.catalog.model.Location;
 import com.coding2.the.max.petstore.catalog.model.Pet;
@@ -23,7 +27,7 @@ import com.coding2.the.max.petstore.catalog.service.PetService;
 
 import reactor.core.publisher.Mono;
 
-@WebFluxTest(PetController.class)
+@WebFluxTest(controllers = PetController.class, includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = GlobalExceptionHandler.class))
 class PetControllerTest {
 
         @Autowired
@@ -64,23 +68,24 @@ class PetControllerTest {
                                                 .build()))
                                 .build();
 
-                Pet mockPet = Pet.builder()
+                PetResponseDTO mockPetResponse = PetResponseDTO.builder()
                                 .id("123e4567-e89b-12d3-a456-426614174000")
                                 .name("Buddy")
                                 .species(Pet.Species.DOG)
-                                .breedName("Golden Retriever")
+                                .breed("Golden Retriever")
                                 .age(24)
-                                .ageCategory(AgeCategory.YOUNG)
                                 .size(Pet.Size.LARGE)
                                 .gender(Pet.Gender.MALE)
                                 .price(BigDecimal.valueOf(1200.0))
                                 .description("Friendly and energetic Golden Retriever")
                                 .characteristics(Arrays.asList("friendly", "energetic"))
-                                .availability(Pet.Availability.AVAILABLE)
+                                .isAvailable(true)
+                                .vaccinated(true)
+                                .spayedNeutered(false)
                                 .build();
 
                 when(petService.createPet(any(CreatePetRequest.class)))
-                                .thenReturn(Mono.just(mockPet));
+                                .thenReturn(Mono.just(mockPetResponse));
 
                 // When & Then
                 webTestClient.post()
@@ -93,24 +98,35 @@ class PetControllerTest {
                                 .jsonPath("$.id").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
                                 .jsonPath("$.name").isEqualTo("Buddy")
                                 .jsonPath("$.species").isEqualTo("dog")
-                                .jsonPath("$.breed_name").isEqualTo("Golden Retriever")
-                                .jsonPath("$.price").isEqualTo(1200.0);
+                                .jsonPath("$.breed").isEqualTo("Golden Retriever")
+                                .jsonPath("$.age").isEqualTo(24)
+                                .jsonPath("$.size").isEqualTo("large")
+                                .jsonPath("$.gender").isEqualTo("male")
+                                .jsonPath("$.price").isEqualTo(1200.0)
+                                .jsonPath("$.description").isEqualTo("Friendly and energetic Golden Retriever")
+                                .jsonPath("$.isAvailable").isEqualTo(true)
+                                .jsonPath("$.vaccinated").isEqualTo(true)
+                                .jsonPath("$.spayedNeutered").isEqualTo(false);
         }
 
         @Test
         void testGetPetById() {
                 // Given
                 String petId = "123e4567-e89b-12d3-a456-426614174000";
-                Pet mockPet = Pet.builder()
+                PetResponseDTO mockPetResponse = PetResponseDTO.builder()
                                 .id(petId)
                                 .name("Buddy")
                                 .species(Pet.Species.DOG)
-                                .breedName("Golden Retriever")
-                                .availability(Pet.Availability.AVAILABLE)
+                                .breed("Golden Retriever")
+                                .age(24)
+                                .size(Pet.Size.LARGE)
+                                .gender(Pet.Gender.MALE)
+                                .price(BigDecimal.valueOf(1200.0))
+                                .isAvailable(true)
                                 .build();
 
                 when(petService.getPetById(petId))
-                                .thenReturn(Mono.just(mockPet));
+                                .thenReturn(Mono.just(mockPetResponse));
 
                 // When & Then
                 webTestClient.get()
@@ -119,6 +135,23 @@ class PetControllerTest {
                                 .expectStatus().isOk()
                                 .expectBody()
                                 .jsonPath("$.id").isEqualTo(petId)
-                                .jsonPath("$.name").isEqualTo("Buddy");
+                                .jsonPath("$.name").isEqualTo("Buddy")
+                                .jsonPath("$.species").isEqualTo("dog")
+                                .jsonPath("$.breed").isEqualTo("Golden Retriever")
+                                .jsonPath("$.isAvailable").isEqualTo(true);
+        }
+
+        @Test
+        void testGetPetByIdNotFound() {
+                // Given
+                String petId = "non-existent-id";
+                when(petService.getPetById(petId))
+                                .thenReturn(Mono.error(new PetNotFoundException(petId)));
+
+                // When & Then
+                webTestClient.get()
+                                .uri("/catalog/v1/pets/" + petId)
+                                .exchange()
+                                .expectStatus().isNotFound();
         }
 }

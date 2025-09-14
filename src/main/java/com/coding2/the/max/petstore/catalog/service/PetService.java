@@ -2,6 +2,7 @@ package com.coding2.the.max.petstore.catalog.service;
 
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
+import com.coding2.the.max.petstore.catalog.dto.PetResponseDTO;
 import com.coding2.the.max.petstore.catalog.dto.PetSearchResponse;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
 import com.coding2.the.max.petstore.catalog.model.Pet;
@@ -16,14 +17,14 @@ public interface PetService {
       Boolean vaccinated, String sortBy, String sortOrder,
       Integer page, Integer limit);
 
-  Mono<Pet> createPet(CreatePetRequest request);
+  Mono<PetResponseDTO> createPet(CreatePetRequest request);
 
-  Mono<Pet> getPetById(String petId);
+  Mono<PetResponseDTO> getPetById(String petId);
 
-  Mono<Pet> updatePet(String petId, UpdatePetRequest request);
+  Mono<PetResponseDTO> updatePet(String petId, UpdatePetRequest request);
 
   Mono<Void> deletePet(String petId);
 
-  Mono<Pet> updatePetAvailability(String petId, AvailabilityUpdateRequest request);
+  Mono<PetResponseDTO> updatePetAvailability(String petId, AvailabilityUpdateRequest request);
 
 }

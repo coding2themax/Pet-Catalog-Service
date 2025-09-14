@@ -3,6 +3,7 @@ package com.coding2.the.max.petstore.catalog.service;
 import com.coding2.the.max.petstore.catalog.dto.BreedsResponse;
 import com.coding2.the.max.petstore.catalog.dto.SpeciesResponse;
 import com.coding2.the.max.petstore.catalog.model.Pet;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,15 @@ class CatalogPostGresServiceTest {
 
   @Autowired
   private CatalogPostGresService catalogService;
-
   @Autowired
   private DatabaseClient databaseClient;
+
+  @AfterAll
+  static void tearDown() {
+    if (postgres != null && postgres.isRunning()) {
+      postgres.close();
+    }
+  }
 
   @BeforeEach
   void setUp() {

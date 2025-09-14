@@ -49,7 +49,7 @@ public class PetController {
   }
 
   @PostMapping
-  public Mono<ResponseEntity<Pet>> createPet(@Valid @RequestBody CreatePetRequest request) {
+  public Mono<ResponseEntity<PetResponseDTO>> createPet(@Valid @RequestBody CreatePetRequest request) {
     log.info("Creating new pet: {}", request.getName());
 
     return petService.createPet(request)
@@ -57,7 +57,7 @@ public class PetController {
   }
 
   @GetMapping("/{petId}")
-  public Mono<ResponseEntity<Pet>> getPetById(
+  public Mono<ResponseEntity<PetResponseDTO>> getPetById(
       @PathVariable @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String petId) {
 
     log.info("Getting pet by ID: {}", petId);
@@ -68,7 +68,7 @@ public class PetController {
   }
 
   @PutMapping("/{petId}")
-  public Mono<ResponseEntity<Pet>> updatePet(
+  public Mono<ResponseEntity<PetResponseDTO>> updatePet(
       @PathVariable @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String petId,
       @Valid @RequestBody UpdatePetRequest request) {
 
@@ -91,7 +91,7 @@ public class PetController {
   }
 
   @PatchMapping("/{petId}/availability")
-  public Mono<ResponseEntity<Pet>> updatePetAvailability(
+  public Mono<ResponseEntity<PetResponseDTO>> updatePetAvailability(
       @PathVariable @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String petId,
       @Valid @RequestBody AvailabilityUpdateRequest request) {
 
