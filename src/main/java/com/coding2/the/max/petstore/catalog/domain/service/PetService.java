@@ -2,9 +2,9 @@ package com.coding2.the.max.petstore.catalog.domain.service;
 
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
-import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
 import com.coding2.the.max.petstore.catalog.openapi.model.Pet;
+import com.coding2.the.max.petstore.catalog.openapi.model.NewPet;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,7 +17,8 @@ public interface PetService {
       Boolean vaccinated, String sortBy, String sortOrder,
       Integer page, Integer limit);
 
-  Mono<Pet> createPet(CreatePetRequest request);
+  // Mono<Pet> createPet(CreatePetRequest request);
+  Mono<Pet> createPet(NewPet newPet);
 
   Mono<Pet> getPetById(String petId);
 

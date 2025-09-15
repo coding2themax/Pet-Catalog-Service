@@ -1,14 +1,16 @@
 package com.coding2.the.max.petstore.catalog.domain.service;
 
+import org.springframework.stereotype.Service;
+
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
-import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
+import com.coding2.the.max.petstore.catalog.openapi.model.NewPet;
 import com.coding2.the.max.petstore.catalog.openapi.model.Pet;
 
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.util.UUID;
 
 @Service
 public class PetServiceImpl implements PetService {
@@ -24,15 +26,34 @@ public class PetServiceImpl implements PetService {
   }
 
   @Override
-  public Mono<Pet> createPet(CreatePetRequest request) {
-    // Placeholder implementation; mapping to API Pet model will be added later
+  public Mono<Pet> getPetById(String petId) {
+    // For testing purposes, return empty if not found
     return Mono.empty();
   }
 
   @Override
-  public Mono<Pet> getPetById(String petId) {
-    // For testing purposes, return empty if not found
-    return Mono.empty();
+  public Mono<Pet> createPet(NewPet newPet) {
+    // Stub implementation: map NewPet to Pet and ensure id is set
+    Pet pet = new Pet(
+        newPet.getAge(),
+        newPet.getBreed(),
+        newPet.getCharacteristics(),
+        newPet.getDescription(),
+        newPet.getEnergyLevel() != null ? Pet.EnergyLevelEnum.fromValue(newPet.getEnergyLevel().getValue()) : null,
+        newPet.getGender() != null ? Pet.GenderEnum.fromValue(newPet.getGender().getValue()) : null,
+        newPet.getGoodWithKids(),
+        newPet.getGoodWithPets(),
+        newPet.getHealthStatus() != null ? Pet.HealthStatusEnum.fromValue(newPet.getHealthStatus().getValue()) : null,
+        newPet.getId() != null ? newPet.getId() : UUID.randomUUID().toString(),
+        newPet.getImageUrl(),
+        newPet.getIsAvailable(),
+        newPet.getName(),
+        newPet.getPrice(),
+        newPet.getSize() != null ? Pet.SizeEnum.fromValue(newPet.getSize().getValue()) : null,
+        newPet.getSpayedNeutered(),
+        newPet.getSpecies(),
+        newPet.getVaccinated());
+    return Mono.just(pet);
   }
 
   @Override
