@@ -19,12 +19,12 @@ import com.coding2.the.max.petstore.catalog.api.controller.PetController;
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.domain.service.PetService;
 import com.coding2.the.max.petstore.catalog.dto.CreatePetRequest;
-import com.coding2.the.max.petstore.catalog.dto.PetResponseDTO;
 import com.coding2.the.max.petstore.catalog.exception.GlobalExceptionHandler;
 import com.coding2.the.max.petstore.catalog.exception.PetNotFoundException;
 import com.coding2.the.max.petstore.catalog.model.HealthInfo;
 import com.coding2.the.max.petstore.catalog.model.Location;
 import com.coding2.the.max.petstore.catalog.model.PetImage;
+import com.coding2.the.max.petstore.catalog.openapi.model.Pet;
 
 import reactor.core.publisher.Mono;
 
@@ -69,24 +69,23 @@ class PetControllerTest {
                                                 .build()))
                                 .build();
 
-                PetResponseDTO mockPetResponse = PetResponseDTO.builder()
-                                .id("123e4567-e89b-12d3-a456-426614174000")
-                                .name("Buddy")
-                                .species(PetEntity.Species.DOG)
-                                .breed("Golden Retriever")
-                                .age(24)
-                                .size(PetEntity.Size.LARGE)
-                                .gender(PetEntity.Gender.MALE)
-                                .price(BigDecimal.valueOf(1200.0))
-                                .description("Friendly and energetic Golden Retriever")
-                                .characteristics(Arrays.asList("friendly", "energetic"))
-                                .isAvailable(true)
-                                .vaccinated(true)
-                                .spayedNeutered(false)
-                                .build();
+                Pet mockPet = new Pet();
+                mockPet.setId("123e4567-e89b-12d3-a456-426614174000");
+                mockPet.setName("Buddy");
+                mockPet.setSpecies("dog");
+                mockPet.setBreed("Golden Retriever");
+                mockPet.setAge(BigDecimal.valueOf(24));
+                mockPet.setSize(Pet.SizeEnum.LARGE);
+                mockPet.setGender(Pet.GenderEnum.MALE);
+                mockPet.setPrice(BigDecimal.valueOf(1200.0));
+                mockPet.setDescription("Friendly and energetic Golden Retriever");
+                mockPet.setCharacteristics(Arrays.asList("friendly", "energetic"));
+                mockPet.setIsAvailable(true);
+                mockPet.setVaccinated(true);
+                mockPet.setSpayedNeutered(false);
 
                 when(petService.createPet(any(CreatePetRequest.class)))
-                                .thenReturn(Mono.just(mockPetResponse));
+                                .thenReturn(Mono.just(mockPet));
 
                 // When & Then
                 webTestClient.post()
@@ -114,20 +113,19 @@ class PetControllerTest {
         void testGetPetById() {
                 // Given
                 String petId = "123e4567-e89b-12d3-a456-426614174000";
-                PetResponseDTO mockPetResponse = PetResponseDTO.builder()
-                                .id(petId)
-                                .name("Buddy")
-                                .species(PetEntity.Species.DOG)
-                                .breed("Golden Retriever")
-                                .age(24)
-                                .size(PetEntity.Size.LARGE)
-                                .gender(PetEntity.Gender.MALE)
-                                .price(BigDecimal.valueOf(1200.0))
-                                .isAvailable(true)
-                                .build();
+                Pet mockPet = new Pet();
+                mockPet.setId(petId);
+                mockPet.setName("Buddy");
+                mockPet.setSpecies("dog");
+                mockPet.setBreed("Golden Retriever");
+                mockPet.setAge(BigDecimal.valueOf(24));
+                mockPet.setSize(Pet.SizeEnum.LARGE);
+                mockPet.setGender(Pet.GenderEnum.MALE);
+                mockPet.setPrice(BigDecimal.valueOf(1200.0));
+                mockPet.setIsAvailable(true);
 
                 when(petService.getPetById(petId))
-                                .thenReturn(Mono.just(mockPetResponse));
+                                .thenReturn(Mono.just(mockPet));
 
                 // When & Then
                 webTestClient.get()
