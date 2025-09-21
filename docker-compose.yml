@@ -41,6 +41,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./src/main/resources/database_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/02-data.sql
+      - ./enhanced_pets_view.sql:/docker-entrypoint-initdb.d/03-enhanced-view.sql
     restart: always
     shm_size: 128mb
     healthcheck:
