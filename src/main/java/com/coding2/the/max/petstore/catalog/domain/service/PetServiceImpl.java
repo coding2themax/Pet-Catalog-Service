@@ -3,17 +3,23 @@ package com.coding2.the.max.petstore.catalog.domain.service;
 import org.springframework.stereotype.Service;
 
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.repository.PetRepository;
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
 import com.coding2.the.max.petstore.catalog.openapi.model.NewPet;
 import com.coding2.the.max.petstore.catalog.openapi.model.Pet;
 
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PetServiceImpl implements PetService {
+
+  private final PetRepository petRepository;
+  private final PetMapper petMapper;
 
   @Override
   public Flux<Pet> searchPets(PetEntity.Species species, String breed, PetEntity.Size size,
@@ -27,8 +33,8 @@ public class PetServiceImpl implements PetService {
 
   @Override
   public Mono<Pet> getPetById(String petId) {
-    // For testing purposes, return empty if not found
-    return Mono.empty();
+    return petRepository.findByIdWithDetails(petId)
+        .map(petMapper::toApiModel);
   }
 
   @Override
@@ -74,7 +80,14 @@ public class PetServiceImpl implements PetService {
   @Override
   public Flux<Pet> listPets(Integer limit, Integer offset, PetEntity.Species species,
       Boolean isAvailable, Double minPrice, Double maxPrice) {
-    // Placeholder implementation; pagination to be handled in repository layer
-    return Flux.empty();
+    String speciesStr = species != null ? species.name().toLowerCase().replace('_', '-') : null;
+
+    return petRepository.findPetsWithFilters(
+        limit != null ? limit : 10,
+        offset != null ? offset : 0,
+        speciesStr,
+        isAvailable,
+        minPrice,
+        maxPrice).map(petMapper::toApiModel);
   }
 }
