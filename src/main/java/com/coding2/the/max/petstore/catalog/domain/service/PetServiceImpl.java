@@ -3,6 +3,7 @@ package com.coding2.the.max.petstore.catalog.domain.service;
 import org.springframework.stereotype.Service;
 
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.repository.PetCompleteDetailsRepository;
 import com.coding2.the.max.petstore.catalog.domain.repository.PetRepository;
 import com.coding2.the.max.petstore.catalog.dto.AvailabilityUpdateRequest;
 import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
@@ -20,6 +21,8 @@ public class PetServiceImpl implements PetService {
 
   private final PetRepository petRepository;
   private final PetMapper petMapper;
+  private final PetCompleteDetailsMapper petCompleteDetailsMapper;
+  private final PetCompleteDetailsRepository petCompleteDetailsRepository;
 
   @Override
   public Flux<Pet> searchPets(PetEntity.Species species, String breed, PetEntity.Size size,
@@ -80,16 +83,13 @@ public class PetServiceImpl implements PetService {
   @Override
   public Flux<Pet> listPets(Integer limit, Integer offset, PetEntity.Species species,
       Boolean isAvailable, Double minPrice, Double maxPrice) {
-    // Temporarily use findAll() to test basic functionality
-    // TODO: Implement proper filtering once basic mapping works
-    return petRepository.findAll()
-        .map(petMapper::toApiModel)
-        .skip(offset != null ? offset : 0)
-        .take(limit != null ? limit : 10);
+    return petCompleteDetailsRepository
+        .findPetsWithFilters(limit, offset, species.toString(), isAvailable, minPrice, maxPrice)
+        .map(petCompleteDetailsMapper::toApiModel);
   }
 
   @Override
   public Flux<Pet> getAllFlux() {
-    return petRepository.findAll().map(petMapper::toApiModel);
+    return petCompleteDetailsRepository.findAll().map(petCompleteDetailsMapper::toApiModel);
   }
 }
