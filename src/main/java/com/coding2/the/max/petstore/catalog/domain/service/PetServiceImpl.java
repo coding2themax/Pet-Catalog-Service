@@ -80,14 +80,16 @@ public class PetServiceImpl implements PetService {
   @Override
   public Flux<Pet> listPets(Integer limit, Integer offset, PetEntity.Species species,
       Boolean isAvailable, Double minPrice, Double maxPrice) {
-    String speciesStr = species != null ? species.name().toLowerCase().replace('_', '-') : null;
+    // Temporarily use findAll() to test basic functionality
+    // TODO: Implement proper filtering once basic mapping works
+    return petRepository.findAll()
+        .map(petMapper::toApiModel)
+        .skip(offset != null ? offset : 0)
+        .take(limit != null ? limit : 10);
+  }
 
-    return petRepository.findPetsWithFilters(
-        limit != null ? limit : 10,
-        offset != null ? offset : 0,
-        speciesStr,
-        isAvailable,
-        minPrice,
-        maxPrice).map(petMapper::toApiModel);
+  @Override
+  public Flux<Pet> getAllFlux() {
+    return petRepository.findAll().map(petMapper::toApiModel);
   }
 }

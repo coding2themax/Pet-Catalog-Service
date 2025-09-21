@@ -23,11 +23,16 @@ public class PetMapper {
     pet.setDescription(entity.getDescription());
     pet.setIsAvailable(entity.getAvailability() == PetEntity.Availability.AVAILABLE);
 
-    // Map health info if available
+    // Handle health info - since it's transient and might be null, set defaults
     if (entity.getHealthInfo() != null) {
       pet.setVaccinated(entity.getHealthInfo().getVaccinated());
       pet.setSpayedNeutered(entity.getHealthInfo().getSpayedNeutered());
       pet.setHealthStatus(mapHealthStatus(entity.getHealthInfo().getHealthCertificate()));
+    } else {
+      // Set defaults when health info is not available
+      pet.setVaccinated(false);
+      pet.setSpayedNeutered(false);
+      pet.setHealthStatus(Pet.HealthStatusEnum.GOOD);
     }
 
     // Map characteristics
@@ -39,6 +44,9 @@ public class PetMapper {
           .filter(img -> img.getIsPrimary())
           .findFirst()
           .ifPresent(img -> pet.setImageUrl(img.getUrl()));
+    } else {
+      // Set a default image URL or leave null
+      pet.setImageUrl(null);
     }
 
     // Set default values for required fields that might be missing

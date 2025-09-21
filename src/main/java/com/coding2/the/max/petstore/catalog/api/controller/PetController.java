@@ -53,11 +53,15 @@ public class PetController implements PetsApi {
       @Min(0) @Valid Integer offset, @Valid String species, @Valid Boolean isAvailable,
       @DecimalMin("0") @Valid BigDecimal minPrice, @DecimalMin("0") @Valid BigDecimal maxPrice,
       ServerWebExchange exchange) {
+    // Handle default values according to OpenAPI specification
+    Integer finalLimit = (limit != null) ? limit : 20;
+    Integer finalOffset = (offset != null) ? offset : 0;
+
     PetEntity.Species speciesEnum = toSpeciesEnum(species);
     Double min = (minPrice != null) ? minPrice.doubleValue() : null;
     Double max = (maxPrice != null) ? maxPrice.doubleValue() : null;
 
-    return petService.listPets(limit, offset, speciesEnum, isAvailable, min, max)
+    return petService.listPets(finalLimit, finalOffset, speciesEnum, isAvailable, min, max)
         .collectList()
         .map(items -> {
           ListPets200Response response = new ListPets200Response();

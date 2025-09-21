@@ -22,7 +22,11 @@ public class R2dbcConfig {
         new SpeciesReadingConverter(),
         new SpeciesWritingConverter(),
         new SizeReadingConverter(),
-        new SizeWritingConverter());
+        new SizeWritingConverter(),
+        new GenderReadingConverter(),
+        new GenderWritingConverter(),
+        new AvailabilityReadingConverter(),
+        new AvailabilityWritingConverter());
   }
 
   @ReadingConverter
@@ -79,6 +83,56 @@ public class R2dbcConfig {
         case MEDIUM -> "medium";
         case LARGE -> "large";
         case EXTRA_LARGE -> "extra-large";
+      };
+    }
+  }
+
+  @ReadingConverter
+  static class GenderReadingConverter implements Converter<String, PetEntity.Gender> {
+    @Override
+    public PetEntity.Gender convert(@NonNull String source) {
+      return switch (source.toLowerCase()) {
+        case "male" -> PetEntity.Gender.MALE;
+        case "female" -> PetEntity.Gender.FEMALE;
+        default -> throw new IllegalArgumentException("Unknown gender: " + source);
+      };
+    }
+  }
+
+  @WritingConverter
+  static class GenderWritingConverter implements Converter<PetEntity.Gender, String> {
+    @Override
+    public String convert(@NonNull PetEntity.Gender source) {
+      return switch (source) {
+        case MALE -> "male";
+        case FEMALE -> "female";
+      };
+    }
+  }
+
+  @ReadingConverter
+  static class AvailabilityReadingConverter implements Converter<String, PetEntity.Availability> {
+    @Override
+    public PetEntity.Availability convert(@NonNull String source) {
+      return switch (source.toLowerCase()) {
+        case "available" -> PetEntity.Availability.AVAILABLE;
+        case "reserved" -> PetEntity.Availability.RESERVED;
+        case "sold" -> PetEntity.Availability.SOLD;
+        case "coming-soon" -> PetEntity.Availability.COMING_SOON;
+        default -> throw new IllegalArgumentException("Unknown availability: " + source);
+      };
+    }
+  }
+
+  @WritingConverter
+  static class AvailabilityWritingConverter implements Converter<PetEntity.Availability, String> {
+    @Override
+    public String convert(@NonNull PetEntity.Availability source) {
+      return switch (source) {
+        case AVAILABLE -> "available";
+        case RESERVED -> "reserved";
+        case SOLD -> "sold";
+        case COMING_SOON -> "coming-soon";
       };
     }
   }
