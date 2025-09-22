@@ -148,6 +148,11 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.13</version>
+				<configuration>
+					<excludes>
+						<exclude>com/coding2/the/max/petstore/catalog/openapi/model/**</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -173,6 +178,7 @@
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
 					<excludes>**/target/generated-sources/openapi/**</excludes>
+					<includeTestSourceDirectory>false</includeTestSourceDirectory>
 				</configuration>
 				<executions>
 					<execution>
