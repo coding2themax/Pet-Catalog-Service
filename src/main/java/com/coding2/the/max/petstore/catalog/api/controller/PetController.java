@@ -64,16 +64,4 @@ public class PetController implements PetsApi {
         });
   }
 
-  private PetEntity.Species toSpeciesEnum(String value) {
-    if (value == null || value.isBlank())
-      return null;
-    String normalized = value.trim().replace('-', '_').replace(' ', '_').toUpperCase();
-    try {
-      return PetEntity.Species.valueOf(normalized);
-    } catch (IllegalArgumentException ex) {
-      log.warn("Unknown species filter received: {}", value);
-      return null;
-    }
-  }
-
 }
