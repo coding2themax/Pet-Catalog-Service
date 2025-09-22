@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 
-import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.coding2.the.max.petstore.catalog.domain.service.PetService;
 import com.coding2.the.max.petstore.catalog.openapi.api.PetsApi;
 import com.coding2.the.max.petstore.catalog.openapi.model.ListPets200Response;
