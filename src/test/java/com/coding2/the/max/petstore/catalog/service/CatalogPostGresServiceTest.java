@@ -27,11 +27,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CatalogPostGresServiceTest {
 
   @Container
+  @SuppressWarnings("resource")
   static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
       .withDatabaseName("testdb")
       .withUsername("test")
       .withPassword("test")
       .withReuse(false);
+
+  static {
+    postgres.start();
+  }
 
   @DynamicPropertySource
   static void configureProperties(DynamicPropertyRegistry registry) {

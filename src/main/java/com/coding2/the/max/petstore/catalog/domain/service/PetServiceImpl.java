@@ -30,8 +30,20 @@ public class PetServiceImpl implements PetService {
       PetEntity.Availability availability, PetEntity.Gender gender,
       Boolean vaccinated, String sortBy, String sortOrder,
       Integer page, Integer limit) {
-    // Placeholder implementation matching interface; returns empty stream
-    return Flux.empty();
+    // Convert availability to boolean for repository query
+    Boolean isAvailable = availability != null ? availability == PetEntity.Availability.AVAILABLE : null;
+
+    // Calculate offset from page and limit
+    Integer offset = (page != null && limit != null) ? page * limit : 0;
+
+    // Use PetRepository to search with filters
+    return petRepository.findPetsWithFilters(
+        limit != null ? limit : 20, // Default limit of 20
+        offset,
+        species != null ? species.toString() : null,
+        isAvailable,
+        priceMin,
+        priceMax).map(petMapper::toApiModel);
   }
 
   @Override
@@ -42,42 +54,96 @@ public class PetServiceImpl implements PetService {
 
   @Override
   public Mono<Pet> createPet(NewPet newPet) {
-    // Stub implementation: map NewPet to Pet and ensure id is set
-    Pet pet = new Pet(
-        newPet.getAge(),
-        newPet.getBreed(),
-        newPet.getCharacteristics(),
-        newPet.getDescription(),
-        newPet.getEnergyLevel() != null ? Pet.EnergyLevelEnum.fromValue(newPet.getEnergyLevel().getValue()) : null,
-        newPet.getGender() != null ? Pet.GenderEnum.fromValue(newPet.getGender().getValue()) : null,
-        newPet.getGoodWithKids(),
-        newPet.getGoodWithPets(),
-        newPet.getHealthStatus() != null ? Pet.HealthStatusEnum.fromValue(newPet.getHealthStatus().getValue()) : null,
-        newPet.getId() != null ? newPet.getId() : UUID.randomUUID().toString(),
-        newPet.getImageUrl(),
-        newPet.getIsAvailable(),
-        newPet.getName(),
-        newPet.getPrice(),
-        newPet.getSize() != null ? Pet.SizeEnum.fromValue(newPet.getSize().getValue()) : null,
-        newPet.getSpayedNeutered(),
-        newPet.getSpecies(),
-        newPet.getVaccinated());
-    return Mono.just(pet);
+    // Map NewPet to PetEntity
+    PetEntity petEntity = PetEntity.builder()
+        .id(newPet.getId() != null ? newPet.getId() : UUID.randomUUID().toString())
+        .name(newPet.getName())
+        .age(newPet.getAge() != null ? newPet.getAge().intValue() : null)
+        .size(mapSizeFromApi(newPet.getSize()))
+        .gender(mapGenderFromApi(newPet.getGender()))
+        .price(newPet.getPrice())
+        .description(newPet.getDescription())
+        .availability(newPet.getIsAvailable() != null && newPet.getIsAvailable() ? PetEntity.Availability.AVAILABLE
+            : PetEntity.Availability.COMING_SOON)
+        .characteristics(newPet.getCharacteristics())
+        .build();
+
+    // Save to database and map back to API model
+    return petRepository.save(petEntity)
+        .flatMap(saved -> petRepository.findByIdWithDetails(saved.getId()))
+        .map(petMapper::toApiModel);
+  }
+
+  private PetEntity.Size mapSizeFromApi(com.coding2.the.max.petstore.catalog.openapi.model.NewPet.SizeEnum size) {
+    if (size == null)
+      return null;
+    return switch (size) {
+      case SMALL -> PetEntity.Size.SMALL;
+      case MEDIUM -> PetEntity.Size.MEDIUM;
+      case LARGE -> PetEntity.Size.LARGE;
+      case EXTRA_LARGE -> PetEntity.Size.EXTRA_LARGE;
+    };
+  }
+
+  private PetEntity.Gender mapGenderFromApi(
+      com.coding2.the.max.petstore.catalog.openapi.model.NewPet.GenderEnum gender) {
+    if (gender == null)
+      return null;
+    return switch (gender) {
+      case MALE -> PetEntity.Gender.MALE;
+      case FEMALE -> PetEntity.Gender.FEMALE;
+    };
   }
 
   @Override
   public Mono<Pet> updatePet(String petId, UpdatePetRequest request) {
-    return Mono.empty();
+    return petRepository.findById(petId)
+        .switchIfEmpty(Mono.error(new RuntimeException("Pet not found with id: " + petId)))
+        .flatMap(existingPet -> {
+          // Update only the fields that are provided in the request
+          if (request.getName() != null) {
+            existingPet.setName(request.getName());
+          }
+          if (request.getAge() != null) {
+            existingPet.setAge(request.getAge());
+          }
+          if (request.getPrice() != null) {
+            existingPet.setPrice(java.math.BigDecimal.valueOf(request.getPrice()));
+          }
+          if (request.getDescription() != null) {
+            existingPet.setDescription(request.getDescription());
+          }
+          if (request.getCharacteristics() != null) {
+            existingPet.setCharacteristics(request.getCharacteristics());
+          }
+
+          return petRepository.save(existingPet);
+        })
+        .flatMap(saved -> petRepository.findByIdWithDetails(saved.getId()))
+        .map(petMapper::toApiModel);
   }
 
   @Override
   public Mono<Void> deletePet(String petId) {
-    return Mono.empty().then();
+    return petRepository.existsById(petId)
+        .flatMap(exists -> {
+          if (!exists) {
+            return Mono.error(new RuntimeException("Pet not found with id: " + petId));
+          }
+          return petRepository.deleteById(petId);
+        });
   }
 
   @Override
   public Mono<Pet> updatePetAvailability(String petId, AvailabilityUpdateRequest request) {
-    return Mono.empty();
+    return petRepository.findById(petId)
+        .switchIfEmpty(Mono.error(new RuntimeException("Pet not found with id: " + petId)))
+        .flatMap(existingPet -> {
+          existingPet.setAvailability(request.getAvailability());
+          return petRepository.save(existingPet);
+        })
+        .flatMap(saved -> petRepository.findByIdWithDetails(saved.getId()))
+        .map(petMapper::toApiModel);
   }
 
   @Override

@@ -154,6 +154,8 @@
 				<configuration>
 					<excludes>
 						<exclude>com/coding2/the/max/petstore/catalog/openapi/model/**</exclude>
+						<exclude>com/coding2/the/max/petstore/catalog/openapi/api/**</exclude>
+
 					</excludes>
 				</configuration>
 				<executions>
