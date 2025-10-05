@@ -49,8 +49,12 @@ class CatalogPostGresServiceTest {
 
   @AfterAll
   static void tearDown() {
-    if (postgres != null && postgres.isRunning()) {
-      postgres.close();
+    try {
+      if (postgres != null && postgres.isRunning()) {
+        postgres.close();
+      }
+    } catch (Exception e) {
+      // Log the exception if needed, but don't fail the test cleanup
     }
   }
 
