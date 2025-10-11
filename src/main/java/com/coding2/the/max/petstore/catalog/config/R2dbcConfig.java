@@ -13,7 +13,7 @@ import org.springframework.lang.NonNull;
 import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 
 @Configuration
-@EnableR2dbcRepositories(basePackages = "com.coding2.the.max.petstore.catalog.repository")
+@EnableR2dbcRepositories(basePackages = "com.coding2.the.max.petstore.catalog.domain.repository")
 public class R2dbcConfig {
 
   @Bean
