@@ -1,28 +1,32 @@
 package com.coding2.the.max.petstore.catalog.config;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+
 @Component
-public class StringToSizeConverter implements Converter<String, Pet.Size> {
+public class StringToSizeConverter implements Converter<String, PetEntity.Size> {
 
   @Override
-  public Pet.Size convert(String source) {
+  public PetEntity.Size convert(@NonNull @NotBlank String source) {
     if (source == null || source.isEmpty()) {
       return null;
     }
 
     switch (source.toLowerCase().replace("-", "_")) {
       case "small":
-        return Pet.Size.SMALL;
+        return PetEntity.Size.SMALL;
       case "medium":
-        return Pet.Size.MEDIUM;
+        return PetEntity.Size.MEDIUM;
       case "large":
-        return Pet.Size.LARGE;
+        return PetEntity.Size.LARGE;
       case "extra_large":
       case "extra-large":
-        return Pet.Size.EXTRA_LARGE;
+        return PetEntity.Size.EXTRA_LARGE;
       default:
         throw new IllegalArgumentException("Invalid size: " + source);
     }

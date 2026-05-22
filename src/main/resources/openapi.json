@@ -1,0 +1,490 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Petstore Web API",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for the Petstore Web demo API. Includes endpoints to list, create, retrieve, update, and delete pets."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local dev"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "Production (example)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "pets",
+      "description": "Operations about pets"
+    }
+  ],
+  "paths": {
+    "/pets": {
+      "get": {
+        "tags": ["pets"],
+        "summary": "List pets",
+        "operationId": "listPets",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to skip for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "species",
+            "in": "query",
+            "description": "Filter by species (e.g., Dog, Cat)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAvailable",
+            "in": "query",
+            "description": "Filter by availability",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Filter by minimum price",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Filter by maximum price",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paged array of pets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Pet"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": ["items", "total"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["pets"],
+        "summary": "Create a pet",
+        "operationId": "createPet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "Location": {
+                "description": "URI of the created resource",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PetId"
+        }
+      ],
+      "get": {
+        "tags": ["pets"],
+        "summary": "Get a pet by id",
+        "operationId": "getPet",
+        "responses": {
+          "200": {
+            "description": "Pet found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": ["pets"],
+        "summary": "Replace a pet",
+        "operationId": "replacePet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["pets"],
+        "summary": "Update a pet",
+        "operationId": "updatePet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PetUpdate"
+              }
+            },
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PetUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["pets"],
+        "summary": "Delete a pet",
+        "operationId": "deletePet",
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "title": "Pet",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "age": { "type": "number" },
+          "breed": { "type": "string" },
+          "characteristics": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "energyLevel": {
+            "type": "string",
+            "enum": ["Low", "Medium", "High"]
+          },
+          "gender": { "type": "string", "enum": ["Male", "Female"] },
+          "goodWithKids": { "type": "boolean" },
+          "goodWithPets": { "type": "boolean" },
+          "healthStatus": {
+            "type": "string",
+            "enum": ["Excellent", "Good", "Fair"]
+          },
+          "id": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "isAvailable": { "type": "boolean" },
+          "name": { "type": "string" },
+          "price": { "type": "number" },
+          "size": {
+            "type": "string",
+            "enum": ["Small", "Medium", "Large", "Extra Large"]
+          },
+          "spayedNeutered": { "type": "boolean" },
+          "species": { "type": "string" },
+          "vaccinated": { "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "breed",
+          "age",
+          "gender",
+          "price",
+          "description",
+          "imageUrl",
+          "isAvailable",
+          "characteristics",
+          "healthStatus",
+          "vaccinated",
+          "spayedNeutered",
+          "size",
+          "energyLevel",
+          "goodWithKids",
+          "goodWithPets"
+        ]
+      },
+      "NewPet": {
+        "title": "NewPet",
+        "description": "Payload to create a new pet (server generates id).",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "age": { "type": "number" },
+          "breed": { "type": "string" },
+          "characteristics": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "energyLevel": {
+            "type": "string",
+            "enum": ["Low", "Medium", "High"]
+          },
+          "gender": { "type": "string", "enum": ["Male", "Female"] },
+          "goodWithKids": { "type": "boolean" },
+          "goodWithPets": { "type": "boolean" },
+          "healthStatus": {
+            "type": "string",
+            "enum": ["Excellent", "Good", "Fair"]
+          },
+          "id": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "isAvailable": { "type": "boolean" },
+          "name": { "type": "string" },
+          "price": { "type": "number" },
+          "size": {
+            "type": "string",
+            "enum": ["Small", "Medium", "Large", "Extra Large"]
+          },
+          "spayedNeutered": { "type": "boolean" },
+          "species": { "type": "string" },
+          "vaccinated": { "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "breed",
+          "age",
+          "gender",
+          "price",
+          "description",
+          "imageUrl",
+          "isAvailable",
+          "characteristics",
+          "healthStatus",
+          "vaccinated",
+          "spayedNeutered",
+          "size",
+          "energyLevel",
+          "goodWithKids",
+          "goodWithPets"
+        ]
+      },
+      "PetUpdate": {
+        "title": "PetUpdate",
+        "description": "Partial update for a pet. Include only fields to change.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "age": { "type": "number" },
+          "breed": { "type": "string" },
+          "characteristics": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "energyLevel": {
+            "type": "string",
+            "enum": ["Low", "Medium", "High"]
+          },
+          "gender": { "type": "string", "enum": ["Male", "Female"] },
+          "goodWithKids": { "type": "boolean" },
+          "goodWithPets": { "type": "boolean" },
+          "healthStatus": {
+            "type": "string",
+            "enum": ["Excellent", "Good", "Fair"]
+          },
+          "id": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "isAvailable": { "type": "boolean" },
+          "name": { "type": "string" },
+          "price": { "type": "number" },
+          "size": {
+            "type": "string",
+            "enum": ["Small", "Medium", "Large", "Extra Large"]
+          },
+          "spayedNeutered": { "type": "boolean" },
+          "species": { "type": "string" },
+          "vaccinated": { "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "breed",
+          "age",
+          "gender",
+          "price",
+          "description",
+          "imageUrl",
+          "isAvailable",
+          "characteristics",
+          "healthStatus",
+          "vaccinated",
+          "spayedNeutered",
+          "size",
+          "energyLevel",
+          "goodWithKids",
+          "goodWithPets"
+        ]
+      },
+      "Error": {
+        "title": "Error",
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": ["code", "message"],
+        "additionalProperties": false
+      }
+    },
+    "parameters": {
+      "PetId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Unique pet identifier",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

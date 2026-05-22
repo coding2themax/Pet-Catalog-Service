@@ -1,0 +1,42 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+*.md
+README.md
+LICENSE
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Maven build output
+target/
+!target/petstore-catalog-service-*.jar
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Logs
+*.log
+logs/
+
+# Test files (if you want to exclude them from build context)
+src/test/
+
+# Environment files
+.env
+.env.local
+.env.*.local

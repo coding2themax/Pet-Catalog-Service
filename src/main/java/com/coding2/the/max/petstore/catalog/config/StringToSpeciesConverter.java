@@ -1,32 +1,36 @@
 package com.coding2.the.max.petstore.catalog.config;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+
 @Component
-public class StringToSpeciesConverter implements Converter<String, Pet.Species> {
+public class StringToSpeciesConverter implements Converter<String, PetEntity.Species> {
 
   @Override
-  public Pet.Species convert(String source) {
+  public PetEntity.Species convert(@NonNull @NotBlank String source) {
     if (source == null || source.isEmpty()) {
       return null;
     }
 
     switch (source.toLowerCase().replace("-", "_")) {
       case "dog":
-        return Pet.Species.DOG;
+        return PetEntity.Species.DOG;
       case "cat":
-        return Pet.Species.CAT;
+        return PetEntity.Species.CAT;
       case "bird":
-        return Pet.Species.BIRD;
+        return PetEntity.Species.BIRD;
       case "fish":
-        return Pet.Species.FISH;
+        return PetEntity.Species.FISH;
       case "reptile":
-        return Pet.Species.REPTILE;
+        return PetEntity.Species.REPTILE;
       case "small_mammal":
       case "small-mammal":
-        return Pet.Species.SMALL_MAMMAL;
+        return PetEntity.Species.SMALL_MAMMAL;
       default:
         throw new IllegalArgumentException("Invalid species: " + source);
     }

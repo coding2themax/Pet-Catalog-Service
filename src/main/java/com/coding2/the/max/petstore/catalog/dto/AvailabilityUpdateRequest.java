@@ -1,6 +1,6 @@
 package com.coding2.the.max.petstore.catalog.dto;
 
-import com.coding2.the.max.petstore.catalog.model.Pet;
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.time.Instant;
 public class AvailabilityUpdateRequest {
 
   @NotNull
-  private Pet.Availability availability;
+  private PetEntity.Availability availability;
 
   @JsonProperty("reserved_until")
   private Instant reservedUntil;

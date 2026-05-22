@@ -1,0 +1,92 @@
+erDiagram
+    LOCATIONS {
+        bigint id PK
+        varchar store_id UK
+        varchar store_name
+        varchar city
+        varchar state
+        varchar zip_code
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    HEALTH_INFO {
+        bigint id PK
+        boolean vaccinated
+        boolean spayed_neutered
+        boolean health_certificate
+        date last_vet_visit
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    BREEDS {
+        bigint id PK
+        varchar name
+        species_enum species
+        timestamptz created_at
+        UNIQUE (name,species)
+    }
+
+    PETS {
+        varchar id PK
+        varchar name
+        int age
+        size_enum size
+        gender_enum gender
+        numeric price
+        text description
+        availability_enum availability
+        bigint location_id FK
+        bigint health_info_id FK
+        bigint breed_id FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PET_IMAGES {
+        bigint id PK
+        varchar pet_id FK
+        varchar url
+        varchar alt_text
+        boolean is_primary
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CHARACTERISTICS {
+        bigint id PK
+        varchar name UK
+        timestamptz created_at
+    }
+
+    PET_CHARACTERISTICS {
+        varchar pet_id FK
+        bigint characteristic_id FK
+        timestamptz created_at
+        PK (pet_id, characteristic_id)
+    }
+
+    HEALTH_INFO_SPECIAL_NEEDS {
+        bigint id PK
+        bigint health_info_id FK
+        varchar special_need
+        timestamptz created_at
+    }
+
+    AGE_CATEGORY_RULES {
+        bigint id PK
+        int min_age
+        int max_age (nullable)
+        age_category_enum category UK
+        timestamptz created_at
+    }
+
+    LOCATIONS ||--o{ PETS : "has"
+    HEALTH_INFO ||--o{ PETS : "referenced by"
+    BREEDS ||--o{ PETS : "classifies"
+    PETS ||--o{ PET_IMAGES : "has"
+    PETS ||--o{ PET_CHARACTERISTICS : "maps"
+    CHARACTERISTICS ||--o{ PET_CHARACTERISTICS : "used in"
+    HEALTH_INFO ||--o{ HEALTH_INFO_SPECIAL_NEEDS : "has"
+    AGE_CATEGORY_RULES ||--o{ PETS : "derives *"

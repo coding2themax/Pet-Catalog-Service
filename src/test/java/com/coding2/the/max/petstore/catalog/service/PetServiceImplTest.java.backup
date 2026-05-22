@@ -1,0 +1,116 @@
+package com.coding2.the.max.petstore.catalog.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.coding2.the.max.petstore.catalog.domain.entity.PetEntity;
+import com.coding2.the.max.petstore.catalog.domain.repository.PetRepository;
+import com.coding2.the.max.petstore.catalog.domain.service.PetService;
+import com.coding2.the.max.petstore.catalog.dto.UpdatePetRequest;
+import com.coding2.the.max.petstore.catalog.openapi.model.NewPet;
+import com.coding2.the.max.petstore.catalog.openapi.model.Pet;
+
+import reactor.test.StepVerifier;
+
+@SpringBootTest
+@Testcontainers
+class PetServiceImplTest {
+
+    @Autowired
+    private PetService petService;
+    @Autowired
+    private PetRepository petRepository;
+
+    @Test
+    void testCreatePetSimple() {
+        // Given - Setup test data without complex relationships
+        NewPet newPet = new NewPet();
+        newPet.setName("Buddy");
+        newPet.setAge(BigDecimal.valueOf(24));
+        newPet.setSize(NewPet.SizeEnum.LARGE);
+        newPet.setGender(NewPet.GenderEnum.MALE);
+        newPet.setPrice(BigDecimal.valueOf(500.00));
+        newPet.setDescription("Friendly golden retriever");
+        newPet.setIsAvailable(true);
+        newPet.setCharacteristics(List.of("friendly", "energetic"));
+
+        // When - Create pet
+        StepVerifier.create(petService.createPet(newPet))
+                .assertNext(createdPet -> {
+                    assertThat(createdPet).isNotNull();
+                    assertThat(createdPet.getName()).isEqualTo("Buddy");
+                    assertThat(createdPet.getAge()).isEqualTo(BigDecimal.valueOf(24));
+                    assertThat(createdPet.getSize()).isEqualTo(Pet.SizeEnum.LARGE);
+                    assertThat(createdPet.getGender()).isEqualTo(Pet.GenderEnum.MALE);
+                    assertThat(createdPet.getPrice()).isEqualTo(BigDecimal.valueOf(500.00));
+                    assertThat(createdPet.getDescription()).isEqualTo("Friendly golden retriever");
+                    assertThat(createdPet.getId()).isNotNull();
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testBasicRepositoryConnection() {
+        // Test that we can at least connect to the re pository
+        StepVerifier.create(petRepository.count())
+                .expectNext(0L)
+                .verifyComplete();
+    }
+
+    @Test
+    void testCreatePetDirect() {
+        // Test creating a pet directly via repository
+        // Don't set ID to let R2DBC handle it as INSERT instead of UPDATE
+        PetEntity pet = PetEntity.builder()
+                .name("TestPet")
+                .age(2)
+                .size(PetEntity.Size.MEDIUM)
+                .gender(PetEntity.Gender.MALE)
+                .price(BigDecimal.valueOf(100.0))
+                .description("Test pet")
+                .availability(PetEntity.Availability.AVAILABLE)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        StepVerifier.create(petRepository.save(pet))
+                .assertNext(savedPet -> {
+                    assertThat(savedPet).isNotNull();
+                    assertThat(savedPet.getName()).isEqualTo("TestPet");
+                    assertThat(savedPet.getId()).isNotNull(); // ID should be generated
+                    assertThat(savedPet.getSize()).isEqualTo(PetEntity.Size.MEDIUM);
+                    assertThat(savedPet.getGender()).isEqualTo(PetEntity.Gender.MALE);
+                    assertThat(savedPet.getAvailability()).isEqualTo(PetEntity.Availability.AVAILABLE);
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testDeletePetNotFound() {
+        // When - Delete non-existent pet
+        StepVerifier.create(petService.deletePet("non-existent-id"))
+                .expectError(RuntimeException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdatePetNotFound() {
+        // Given - Non-existent pet ID
+        UpdatePetRequest updateRequest = UpdatePetRequest.builder()
+                .name("Updated Name")
+                .build();
+
+        // When - Update non-existent pet
+        StepVerifier.create(petService.updatePet("non-existent-id", updateRequest))
+                .expectError(RuntimeException.class)
+                .verify();
+    }
+}

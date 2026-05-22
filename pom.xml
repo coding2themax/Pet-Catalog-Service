@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.4</version>
+		<version>3.5.7</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.coding2.the.max</groupId>
@@ -29,6 +29,9 @@
 	</scm>
 	<properties>
 		<java.version>24</java.version>
+		<!-- Exclude generated code from SonarQube analysis -->
+		<sonar.exclusions>
+			**/target/generated-sources/openapi/**/*,**/openapi/model/**/*,**/openapi/api/**/*</sonar.exclusions>
 	</properties>
 	<dependencies>
 
@@ -45,6 +48,23 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>r2dbc-postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -69,9 +89,35 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>r2dbc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
 			<version>2.8.9</version>
+		</dependency>
+		<!-- Needed by OpenAPI generated models for Nullable support -->
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.6</version>
 		</dependency>
 	</dependencies>
 
@@ -105,6 +151,13 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.13</version>
+				<configuration>
+					<excludes>
+						<exclude>com/coding2/the/max/petstore/catalog/openapi/model/**</exclude>
+						<exclude>com/coding2/the/max/petstore/catalog/openapi/api/**</exclude>
+
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -120,7 +173,84 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.5.0</version>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>true</failsOnError>
+					<linkXRef>false</linkXRef>
+					<excludes>**/target/generated-sources/openapi/**</excludes>
+					<includeTestSourceDirectory>false</includeTestSourceDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.15.0</version>
+				<executions>
+					<execution>
+						<id>generate-openapi</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi.json</inputSpec>
+							<generatorName>spring</generatorName>
+							<!-- Generate Spring WebFlux interfaces compatible with Spring Boot 3 / Jakarta -->
+							<library>spring-boot</library>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<addCompileSourceRoot>true</addCompileSourceRoot>
+							<apiPackage>com.coding2.the.max.petstore.catalog.openapi.api</apiPackage>
+							<modelPackage>com.coding2.the.max.petstore.catalog.openapi.model</modelPackage>
+							<invokerPackage>com.coding2.the.max.petstore.catalog.openapi</invokerPackage>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<!-- The spec may evolve; keep validation off to avoid build breaks, we'll validate in
+							CI separately. -->
+							<validateSpec>false</validateSpec>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+								<reactive>true</reactive>
+								<useJakartaEe>true</useJakartaEe>
+								<useSpringBoot3>true</useSpringBoot3>
+								<dateLibrary>java8</dateLibrary>
+								<generateApiTests>false</generateApiTests>
+								<generateModelTests>false</generateModelTests>
+								<hideGenerationTimestamp>true</hideGenerationTimestamp>
+								<additionalModelTypeAnnotations>@SuppressWarnings("unused")</additionalModelTypeAnnotations>
+
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.10.0.2594</version>
+				<configuration>
+					<properties>
+						<sonar.exclusions>
+							**/target/generated-sources/openapi/**/*,**/openapi/model/**/*,**/openapi/api/**/*</sonar.exclusions>
+					</properties>
+				</configuration>
+			</plugin>
 		</plugins>
+
 	</build>
 
 </project>

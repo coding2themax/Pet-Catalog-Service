@@ -1,0 +1,49 @@
+# Test Configuration with Testcontainers
+spring:
+  application:
+    name: petstore-catalog-service-test
+
+  # R2DBC Configuration for Testcontainers
+  r2dbc:
+    url: r2dbc:tc:postgresql:///test?TC_IMAGE_TAG=14
+    username: postgres
+    password: postgres
+    pool:
+      initial-size: 5
+      max-size: 10
+      max-idle-time: 10m
+
+  # SQL Initialization
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:database_schema.sql
+      data-locations: classpath:data.sql
+
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+
+# Server Configuration for Tests
+server:
+  port: 0 # Use random port for tests
+
+# Logging Configuration for Tests
+logging:
+  level:
+    "[com.coding2.the.max.petstore.catalog]": DEBUG
+    "[org.springframework.web.reactive]": DEBUG
+    "[org.springframework.r2dbc]": DEBUG
+    "[io.r2dbc.postgresql]": DEBUG
+    "[org.testcontainers]": INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Disable Swagger UI for tests
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
