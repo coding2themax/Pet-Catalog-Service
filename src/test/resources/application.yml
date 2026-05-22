@@ -17,6 +17,8 @@ spring:
   sql:
     init:
       mode: always
+      schema-locations: classpath:database_schema.sql
+      data-locations: classpath:data.sql
 
   # Jackson Configuration
   jackson:

@@ -167,26 +167,8 @@ LEFT JOIN pet_age_categories pac ON pac.pet_id = p.id;
 -- Add proper indexes
 CREATE INDEX IF NOT EXISTS idx_pets_breed_id ON pets(breed_id);
 
--- Create triggers for updating updated_at timestamps
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER update_pets_updated_at BEFORE UPDATE ON pets
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_locations_updated_at BEFORE UPDATE ON locations
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_health_info_updated_at BEFORE UPDATE ON health_info
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_pet_images_updated_at BEFORE UPDATE ON pet_images
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Note: Triggers for updating updated_at timestamps are handled by the application layer
+-- R2DBC doesn't support PostgreSQL's $$ dollar quoting syntax for functions
 
 -- Sample data insertion (optional - remove if not needed)
 -- INSERT INTO locations (store_id, store_name, city, state, zip_code) VALUES

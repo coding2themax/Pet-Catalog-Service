@@ -1,15 +1,7 @@
 -- Pet Catalog Service - Test Data Initialization Script (BCNF / current schema)
 -- Updated: August 17, 2025
 
--- Clear existing data
-DELETE FROM pet_characteristics;
-DELETE FROM pet_images;
-DELETE FROM pets;
-DELETE FROM breeds;
-DELETE FROM characteristics;
-DELETE FROM health_info_special_needs;
-DELETE FROM health_info;
-DELETE FROM locations;
+
 
 -- Reset sequences
 ALTER SEQUENCE location_seq RESTART WITH 1;

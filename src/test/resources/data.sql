@@ -2,25 +2,19 @@
 -- Updated: August 17, 2025
 
 -- Clear existing data
-DELETE FROM pet_characteristics;
-DELETE FROM pet_images;
-DELETE FROM pets;
-DELETE FROM breeds;
-DELETE FROM characteristics;
-DELETE FROM health_info_special_needs;
-DELETE FROM health_info;
-DELETE FROM locations;
+DELETE FROM pet_characteristics IF EXISTS;
+DELETE FROM pet_images IF EXISTS;
+DELETE FROM pets IF EXISTS;
+DELETE FROM breeds IF EXISTS;
+DELETE FROM characteristics IF EXISTS;
+DELETE FROM health_info_special_needs IF EXISTS;
+DELETE FROM health_info IF EXISTS;
+DELETE FROM locations IF EXISTS;
 
 -- Reset sequences
 ALTER SEQUENCE location_seq RESTART WITH 1;
 ALTER SEQUENCE health_info_seq RESTART WITH 1;
 ALTER SEQUENCE pet_image_seq RESTART WITH 1;
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'breeds_id_seq') THEN
-    EXECUTE 'ALTER SEQUENCE breeds_id_seq RESTART WITH 1';
-  END IF;
-END$$;
 
 -- Insert test locations
 INSERT INTO locations (store_id, store_name, city, state, zip_code) VALUES
